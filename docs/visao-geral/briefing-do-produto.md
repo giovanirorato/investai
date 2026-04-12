@@ -43,15 +43,19 @@ Centralizar dados financeiros, modelos de valuation e analise assistida por IA e
 - Analise automatizada por agentes especializados.
 - Recomendacoes e estrategias alinhadas ao perfil ou objetivo do usuario.
 
+## Diretriz tecnica
+
+O projeto adotara `TypeScript` como linguagem principal da aplicacao. A proposta e manter consistencia entre frontend e backend, facilitar o compartilhamento de tipos e reduzir complexidade de desenvolvimento no inicio do projeto.
+
 ## Arquitetura proposta
 
 ### Front-end
 
-Interface web para busca de empresas, visualizacao de analises e exploracao de recomendacoes. Tecnologias candidatas: `React` ou `Vue.js`.
+Interface web para busca de empresas, visualizacao de analises e exploracao de recomendacoes, implementada com `React` e `TypeScript`.
 
 ### Back-end
 
-API para orquestrar a coleta de dados, o processamento das analises e a execucao dos agentes inteligentes. Tecnologias candidatas: `FastAPI` ou `Node.js`.
+API para orquestrar a coleta de dados, o processamento das analises e a execucao dos agentes inteligentes, implementada no ecossistema `Node.js` com `TypeScript`.
 
 ### Banco de dados
 
@@ -76,5 +80,5 @@ API para orquestrar a coleta de dados, o processamento das analises e a execucao
 - Definir o problema e a proposta de valor em versoes curtas e objetivas.
 - Mapear personas e cenarios de uso.
 - Priorizar backlog inicial do MVP.
-- Escolher stack tecnica definitiva.
+- Detalhar a stack tecnica definitiva a partir da decisao por `TypeScript`.
 - Documentar arquitetura, banco de dados e API.

@@ -2,6 +2,10 @@
 
 Plataforma de apoio a decisao para analise de empresas listadas em bolsa, identificacao de oportunidades e recomendacao de estrategias de investimento com apoio de IA.
 
+## Diretriz tecnica atual
+
+O projeto usara `TypeScript` como linguagem principal. Essa decisao orienta a implementacao do frontend e do backend, reduz a fragmentacao tecnologica e simplifica manutencao, tipagem e compartilhamento de contratos entre camadas.
+
 ## Documentacao atual
 
 ```text
