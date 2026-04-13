@@ -55,8 +55,9 @@ Pending Invite
 - Backpend
 - Conexão os os dados históricos
 - Conexão com os modelos LLM opensource
-   - Giovani Rorato
+    - Giovani Rorato
 - Aplicação de machine learaning
+    - 
 
 ## Diretriz tecnica atual
 
