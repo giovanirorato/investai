@@ -2,6 +2,62 @@
 
 Plataforma de apoio a decisao para analise de empresas listadas em bolsa, identificacao de oportunidades e recomendacao de estrategias de investimento com apoio de IA.
 
+## Colaboradores
+
+@Allanzin178
+Allan
+Awaiting Allanzin178’s response
+Pending Invite
+ 
+ @Daniell061
+Daniel Francisco Evangelista de Sousa
+Awaiting Daniell061’s response
+Pending Invite
+ 
+ @DevKalleby
+DevKalleby
+Awaiting DevKalleby’s response
+Pending Invite
+ 
+ @evandrolorens
+evandrolorens
+Collaborator
+
+ @Lucasgean08
+Lucas_Gean
+Awaiting Lucasgean08’s response
+Pending Invite
+ 
+ @marianaurani
+Mariana Urani
+Awaiting marianaurani’s response
+Pending Invite
+ 
+ @Matucaul
+Mateus Lacerda
+Matucaul • Collaborator
+
+ @sudo-igor
+Igor Sudo
+Awaiting sudo-igor’s response
+Pending Invite
+ 
+ @williamffccsm
+William de Jesus
+Awaiting williamffccsm’s response
+Pending Invite
+
+## Áreas de atuação
+
+- Orientações
+    - Giovani rorato
+- Frontend
+- Backpend
+- conexão os os dados históricos
+- Conexão com os modelos LLM opensource
+- Aplicação de machine learaning
+
+
 ## Diretriz tecnica atual
 
 O projeto usara `TypeScript` como linguagem principal. Essa decisao orienta a implementacao do frontend e do backend, reduz a fragmentacao tecnologica e simplifica manutencao, tipagem e compartilhamento de contratos entre camadas.
