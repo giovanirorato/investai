@@ -50,13 +50,13 @@ Pending Invite
 ## Áreas de atuação
 
 - Orientações
-    - Giovani rorato
+    - Giovani Rorato
 - Frontend
 - Backpend
-- conexão os os dados históricos
+- Conexão os os dados históricos
 - Conexão com os modelos LLM opensource
+   - Giovani Rorato
 - Aplicação de machine learaning
-
 
 ## Diretriz tecnica atual
 
