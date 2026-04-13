@@ -47,6 +47,10 @@ William de Jesus
 Awaiting williamffccsm’s response
 Pending Invite
 
+## Trello
+
+Para organização do projeto.
+
 ## Áreas de atuação
 
 - Orientações
@@ -54,6 +58,7 @@ Pending Invite
 - Frontend
 - Backpend
 - Conexão os os dados históricos
+    - Base de dados, modelagem e dados.
 - Conexão com os modelos LLM opensource
     - Giovani Rorato
 - Aplicação de machine learaning
