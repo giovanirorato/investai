@@ -20,7 +20,7 @@ Awaiting DevKalleby’s response
 Pending Invite
  
  @evandrolorens
-evandrolorens
+Evandro Lorens
 Collaborator
 
  @Lucasgean08
