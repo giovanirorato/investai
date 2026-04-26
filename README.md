@@ -50,6 +50,7 @@ Pending Invite
 ## Trello
 
 Para organização do projeto.
+ - Mateus lacerda.
 
 ## Áreas de atuação
 
