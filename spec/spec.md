@@ -8,6 +8,19 @@ Este arquivo e o documento-base do produto nesta fase do projeto. Ele consolida 
 - Cobertura complementar: `docs/entregas/entrega-parcial-levelup.md` e `definicoes.md`.
 - Marcacao de hipotese: todo item nao confirmado diretamente pelo briefing aparece com o rotulo `Assuncao`.
 
+### Diretriz para equipe academica
+
+Este documento deve orientar uma equipe de estudantes a entregar um MVP funcional, demonstravel e tecnicamente coerente. Por isso, a prioridade nao e construir a arquitetura mais completa possivel, mas sim uma versao simples que prove o fluxo principal do produto.
+
+Principios para desenvolvimento:
+
+- Priorizar o fluxo ponta a ponta: buscar empresa -> ver dados -> solicitar analise -> receber valuation -> receber recomendacao.
+- Comecar com dados controlados em `seed` ou mock para 5 a 10 empresas e integrar uma API externa apenas depois que o fluxo local estiver funcionando.
+- Usar IA para explicar, classificar e recomendar, mas manter calculos numericos e valuation em codigo deterministico.
+- Evitar microservicos, filas externas, `Elasticsearch` e machine learning proprietario no MVP.
+- Documentar decisoes, prompts, limitacoes e erros conhecidos para facilitar avaliacao academica.
+- Manter tarefas pequenas, testaveis e divisiveis entre frontend, backend, banco, IA e documentacao.
+
 ## 1. Resumo executivo
 
 ### Problema em versao curta
@@ -118,6 +131,28 @@ Entregar uma plataforma web que permita pesquisar empresas, visualizar dados fin
 - Apresentacao de valuation inicial com racional resumido.
 - Geracao de recomendacao alinhada ao perfil ou objetivo do usuario.
 - Registro do pedido de analise e do resultado para consulta posterior.
+
+### MVP academico recomendado
+
+Para uma equipe estudante, o MVP deve ser dividido em uma versao obrigatoria e extensoes opcionais.
+
+Obrigatorio para demonstracao:
+
+- Cadastro inicial via `seed` de empresas, setores e indicadores financeiros.
+- Busca por nome ou ticker usando dados locais.
+- Tela de detalhe com indicadores principais, grafico simples e fonte/data dos dados.
+- Botao para solicitar analise da empresa.
+- Backend criando `AnalysisRequest`, gerando resultado e salvando status.
+- Valuation simplificado calculado em codigo, com premissas visiveis.
+- Recomendacao textual gerada por IA ou por regra fallback quando a IA estiver indisponivel.
+
+Opcional se houver tempo:
+
+- Integracao real com uma API de mercado.
+- Autenticacao de usuarios.
+- Historico completo de analises por usuario.
+- Comparacao entre duas ou mais empresas.
+- Execucao assincrona com fila real.
 
 ### Fora de escopo nesta fase
 
@@ -289,14 +324,16 @@ Tarefas derivadas:
 
 ### Stack proposta
 
-- Frontend: `React` com `TypeScript`.
-- Backend: `Node.js` com `TypeScript`.
-- Banco principal: `PostgreSQL`.
-- Busca/indexacao avancada: `Elasticsearch` opcional.
-- Integracoes de mercado: `Yahoo Finance`, `Alpha Vantage` ou equivalente.
-- Integracoes de IA: servicos de modelos para classificacao, resumo e recomendacao.
-- `Assuncao`: usar um adaptador de provedores para permitir troca entre modelos open-source e pagos.
-- `Assuncao`: `OpenRouter` pode ser avaliado como camada de acesso a modelos, conforme `definicoes.md`.
+- Frontend: `React`, `Vite` e `TypeScript`.
+- Backend: `Node.js`, `Express` ou `Fastify` e `TypeScript`.
+- Validacao de dados: `Zod` ou biblioteca equivalente.
+- ORM e banco: `Prisma` com `PostgreSQL`.
+- Graficos: biblioteca simples no frontend, como `Recharts` ou equivalente.
+- IA: `OpenRouter` ou outro provedor compativel, isolado atras de um adaptador.
+- Dados de mercado no MVP: primeiro `seed` local; depois `Yahoo Finance`, `Alpha Vantage` ou equivalente.
+- Busca/indexacao avancada: `Elasticsearch` somente em fase futura.
+- `Assuncao`: a equipe deve escolher `Express` ou `Fastify`, nao ambos.
+- `Assuncao`: manter `OpenRouter` como opcao pratica para acesso a modelos open-source, conforme `definicoes.md`.
 
 ### Ferramentas de IA e classificacao de custo
 
@@ -304,22 +341,90 @@ Tarefas derivadas:
 - Pagas: APIs premium de mercado, modelos fechados com custo por token e servicos gerenciados de busca/indexacao.
 - `Assuncao`: o MVP deve priorizar componentes com baixo custo inicial e facilidade de substituicao.
 
-### Estrutura inicial de modulos
+### Estrutura recomendada de pastas para implementacao
+
+Os documentos base existentes permanecem como ponto de entrada do projeto:
 
 ```text
-src/
-  frontend/
-  backend/
-    modules/
-      companies/
-      analysis/
-      recommendations/
-      integrations/
-      agents/
-      persistence/
+.
+  README.md
+  definicoes.md
+  docs/
+    entregas/
+    visao-geral/
+  spec/
+    spec.md
+    duvidas.md
 ```
 
-`Assuncao`: a estrutura final de pastas pode mudar quando o repositorio de codigo for iniciado, mas os modulos acima representam as responsabilidades esperadas.
+Para a implementacao, a estrutura adotada e um monorepo simples, com poucas camadas e responsabilidades claras:
+
+```text
+.
+  apps/
+    web/
+      package.json
+      src/
+        app/
+        components/
+        features/
+          companies/
+          analysis/
+          recommendations/
+        services/
+        styles/
+    api/
+      package.json
+      prisma/
+        schema.prisma
+        seed.ts
+      src/
+        modules/
+          companies/
+          analysis/
+          recommendations/
+          agents/
+          integrations/
+          valuation/
+        shared/
+        jobs/
+        config/
+  packages/
+    shared/
+      src/
+        contracts/
+        schemas/
+        types/
+  infra/
+    docker/
+      docker-compose.yml
+  docs/
+    arquitetura/
+    entregas/
+    planejamento/
+    processo/
+    prompt-ops/
+    visao-geral/
+  spec/
+    spec.md
+    duvidas.md
+```
+
+Responsabilidades principais:
+
+- `apps/web`: interface React, fluxos de busca, detalhe de empresa, status de analise e recomendacoes.
+- `apps/api`: API Node.js, regras de negocio, orquestracao dos agentes, integracoes externas e persistencia.
+- `apps/api/prisma`: schema do banco, migracoes e dados iniciais para demonstracao.
+- `apps/api/src/modules`: modulos de negocio separados por responsabilidade.
+- `apps/api/src/modules/valuation`: calculos deterministicos de valuation e premissas usadas.
+- `apps/api/src/modules/agents`: chamadas para IA, prompts, validacao da resposta e fallback.
+- `apps/api/src/modules/integrations`: adaptadores para APIs externas, mantendo o restante do backend desacoplado.
+- `packages/shared`: tipos, DTOs e schemas compartilhados entre frontend e backend.
+- `infra/docker`: configuracao local para subir PostgreSQL e dependencias de desenvolvimento.
+- `docs`: documentos derivados da entrega parcial, separados por arquitetura, planejamento, processo e prompt ops.
+- `spec`: documento-base consolidado e duvidas ainda nao resolvidas.
+
+Essa estrutura reduz a quantidade de pacotes, mas ainda preserva separacao suficiente para o time dividir tarefas. `Assuncao`: se o grupo tiver pouco tempo, `packages/shared` pode ser criado apenas quando houver tipos duplicados entre frontend e backend.
 
 ### Componentes principais
 
@@ -349,11 +454,43 @@ src/
 - Saida: preco justo, sinalizacao de oportunidade e resumo do racional.
 - Dependencias: regras financeiras, possivel apoio de IA e persistencia do resultado.
 
+#### Regra inicial de valuation para o MVP
+
+O MVP academico deve usar uma regra simples, reproduzivel e facil de explicar. A sugestao inicial e valuation por multiplo de lucro:
+
+1. Obter `currentPrice`, `earningsPerShare` e setor da empresa.
+2. Definir um `targetPeRatio` por setor ou por tabela fixa documentada.
+3. Calcular `fairPrice = earningsPerShare * targetPeRatio`.
+4. Calcular `upsidePct = (fairPrice - currentPrice) / currentPrice`.
+5. Classificar confianca como `low`, `medium` ou `high` conforme completude dos dados.
+
+Exemplo de tabela inicial de multiplos:
+
+| Setor | `targetPeRatio` |
+| --- | --- |
+| Financeiro | 8 |
+| Energia | 10 |
+| Varejo | 12 |
+| Tecnologia | 18 |
+| Outro | 10 |
+
+Se `currentPrice` ou `earningsPerShare` estiver ausente, o valuation deve retornar status `partial` e explicar a ausencia. A IA pode ajudar a redigir o racional, mas nao deve inventar numeros nem substituir o calculo.
+
 #### Agente de Recomendacao
 
 - Entrada: perfil do usuario, objetivo, classificacao e valuation.
 - Saida: recomendacao contextualizada e proxima acao sugerida.
 - Dependencias: resultado dos agentes anteriores e provedor de IA.
+
+#### Regra inicial de recomendacao para o MVP
+
+O sinal padronizado deve ser gerado por regra simples antes de qualquer texto da IA:
+
+- `buy`: `upsidePct >= 0.15`, confianca `medium` ou `high` e perfil compativel com risco do ativo.
+- `monitor`: `upsidePct` entre `-0.05` e `0.15`, ou confianca `low`, ou dados parcialmente completos.
+- `avoid`: `upsidePct < -0.05`, dados criticos ausentes ou incompatibilidade clara com o perfil informado.
+
+A IA deve transformar esse sinal em uma explicacao legivel, sempre respeitando o resultado calculado pela regra.
 
 ### Fluxo fim a fim
 
@@ -368,7 +505,8 @@ src/
 ### Latencia, timeout e indisponibilidade
 
 - Consultas simples devem ser sincronas quando os dados ja estiverem persistidos.
-- Analises completas podem ser assincronas com consulta posterior de status.
+- No MVP academico, analises podem ser processadas de forma sincrona pelo backend e ainda assim persistir status.
+- Analises completas podem evoluir para execucao assincrona com consulta posterior de status.
 - Timeout de integracao externa deve gerar retentativa controlada e status parcial.
 - Falha de modelo de IA nao deve apagar resultados ja coletados ou calculados por etapas anteriores.
 
@@ -380,11 +518,11 @@ src/
 | --- | --- | --- | --- |
 | `UserProfile` | Guardar contexto do usuario para recomendacao | `id`, `type`, `riskTolerance`, `objective`, `investmentHorizon` | 1:N com `Recommendation` |
 | `Company` | Representar empresa listada | `id`, `ticker`, `name`, `sector`, `market` | 1:N com `FinancialSnapshot`, `HistoricalSeries`, `AnalysisRequest` |
-| `FinancialSnapshot` | Guardar indicadores pontuais | `id`, `companyId`, `referenceDate`, `revenue`, `ebitda`, `netIncome`, `debt`, `source` | N:1 com `Company` |
+| `FinancialSnapshot` | Guardar indicadores pontuais | `id`, `companyId`, `referenceDate`, `currentPrice`, `earningsPerShare`, `peRatio`, `revenue`, `ebitda`, `netIncome`, `debt`, `source` | N:1 com `Company` |
 | `HistoricalSeries` | Guardar series historicas e dados para graficos | `id`, `companyId`, `metric`, `period`, `value`, `source` | N:1 com `Company` |
 | `AnalysisRequest` | Registrar pedido e status da analise | `id`, `companyId`, `requestedBy`, `status`, `requestedAt` | N:1 com `Company`; 1:1 ou 1:N com `AnalysisResult` |
 | `AnalysisResult` | Consolidar resultado analitico da empresa | `id`, `analysisRequestId`, `classificationSummary`, `confidenceLevel`, `generatedAt` | N:1 com `AnalysisRequest` |
-| `ValuationResult` | Guardar resultado do valuation | `id`, `analysisResultId`, `fairPrice`, `upsidePct`, `rationaleSummary` | N:1 com `AnalysisResult` |
+| `ValuationResult` | Guardar resultado do valuation | `id`, `analysisResultId`, `fairPrice`, `upsidePct`, `targetPeRatio`, `method`, `rationaleSummary` | N:1 com `AnalysisResult` |
 | `Recommendation` | Registrar recomendacao ao usuario | `id`, `analysisResultId`, `userProfileId`, `recommendationType`, `summary`, `nextAction` | N:1 com `AnalysisResult`; N:1 com `UserProfile` |
 
 ### Chaves e relacionamentos
@@ -436,6 +574,9 @@ Resposta resumida:
   },
   "financialSnapshot": {
     "referenceDate": "2026-03-31",
+    "currentPrice": 28.5,
+    "earningsPerShare": 4.06,
+    "peRatio": 7.02,
     "revenue": 0,
     "netIncome": 0,
     "source": "provider-x"
@@ -483,7 +624,11 @@ Resposta resumida:
   },
   "valuationResult": {
     "fairPrice": 32.5,
-    "upsidePct": 0.14
+    "upsidePct": 0.14,
+    "assumptions": {
+      "method": "earnings_multiple",
+      "targetPeRatio": 8
+    }
   }
 }
 ```
@@ -506,7 +651,7 @@ Resposta resumida:
 
 ```json
 {
-  "recommendationType": "monitorar para entrada",
+  "recommendationType": "monitor",
   "summary": "ativo com fundamentos consistentes e upside moderado",
   "nextAction": "acompanhar proximo resultado trimestral"
 }
@@ -519,6 +664,42 @@ Resposta resumida:
 - recomendacao personalizada exige `userProfileId` ou `objective`.
 - respostas de agentes devem conter campos minimos obrigatorios antes de serem marcadas como concluidas.
 
+### Enums iniciais recomendados
+
+Status de `AnalysisRequest`:
+
+- `queued`: pedido criado, ainda nao processado.
+- `processing`: agentes ou regras em execucao.
+- `partial`: parte da analise foi concluida, mas houve falha em alguma etapa.
+- `completed`: analise concluida com campos obrigatorios preenchidos.
+- `failed`: analise nao pode ser concluida.
+
+Nivel de confianca:
+
+- `low`: dados insuficientes, resposta parcial ou premissas fracas.
+- `medium`: dados principais presentes, mas com alguma limitacao.
+- `high`: dados principais presentes, consistentes e com racional verificavel.
+
+Tipo de recomendacao:
+
+- `buy`: ativo parece atrativo conforme perfil e premissas.
+- `monitor`: ativo deve ser acompanhado antes de decisao.
+- `avoid`: ativo nao esta alinhado ao perfil, risco ou premissas atuais.
+
+### Formato padrao de erro
+
+```json
+{
+  "error": {
+    "code": "COMPANY_NOT_FOUND",
+    "message": "Empresa nao encontrada para o identificador informado.",
+    "details": {
+      "companyId": "cmp_invalido"
+    }
+  }
+}
+```
+
 ### Exemplo de fluxo completo
 
 1. Usuario busca `BBAS3` em `GET /companies?query=BBAS3`.
@@ -529,7 +710,101 @@ Resposta resumida:
 6. Usuario pede recomendacao em `POST /recommendations`.
 7. Sistema devolve recomendacao com resumo, proxima acao e referencia ao contexto analisado.
 
-## 9. Riscos, falhas e duvidas
+## 9. Guia de implementacao para equipe estudante
+
+### Sequencia recomendada de desenvolvimento
+
+#### Fase 1 - Base do projeto
+
+Objetivo: deixar o repositorio pronto para o time trabalhar.
+
+Entregas:
+
+- Criar `apps/web`, `apps/api`, `packages/shared`, `infra/docker` e pastas de documentacao.
+- Configurar `TypeScript`, lint basico e scripts de desenvolvimento.
+- Subir `PostgreSQL` local com `docker-compose`.
+- Criar schema inicial do Prisma e seed com empresas.
+
+#### Fase 2 - API e banco com dados locais
+
+Objetivo: validar o backend sem depender de integracoes externas.
+
+Entregas:
+
+- Implementar `GET /companies`.
+- Implementar `GET /companies/:companyId`.
+- Criar entidades `Company`, `FinancialSnapshot` e `HistoricalSeries`.
+- Popular o banco com 5 a 10 empresas conhecidas e dados suficientes para demonstracao.
+
+#### Fase 3 - Frontend funcional
+
+Objetivo: entregar o primeiro fluxo visivel para apresentacao.
+
+Entregas:
+
+- Tela de busca por nome ou ticker.
+- Lista de resultados.
+- Tela de detalhe da empresa.
+- Grafico simples de historico.
+- Indicacao de fonte e data dos dados.
+
+#### Fase 4 - Analise e valuation deterministico
+
+Objetivo: provar a logica principal antes da IA.
+
+Entregas:
+
+- Implementar `POST /analysis-requests`.
+- Implementar `GET /analysis-requests/:analysisRequestId`.
+- Criar valuation simplificado com premissas documentadas.
+- Salvar `AnalysisRequest`, `AnalysisResult` e `ValuationResult`.
+- Retornar status `completed`, `partial` ou `failed`.
+
+#### Fase 5 - Integracao com IA
+
+Objetivo: adicionar valor de IA sem comprometer o fluxo principal.
+
+Entregas:
+
+- Criar adaptador unico para o provedor de IA.
+- Criar prompt de classificacao e recomendacao.
+- Validar se a resposta da IA possui campos obrigatorios.
+- Criar fallback por regra quando a IA falhar.
+- Registrar prompt, entrada resumida, saida e problemas encontrados em `docs/prompt-ops/`.
+
+#### Fase 6 - Refinamento e apresentacao
+
+Objetivo: preparar uma entrega estavel, explicavel e demonstravel.
+
+Entregas:
+
+- Melhorar mensagens de erro e estados de carregamento.
+- Revisar documentacao de arquitetura, API, banco e processo.
+- Preparar roteiro de demonstracao do fluxo completo.
+- Registrar limitacoes conhecidas e proximos passos.
+
+### Divisao sugerida de responsabilidades
+
+- Frontend: telas, navegacao, componentes, graficos e consumo da API.
+- Backend: endpoints, validacao, regras de negocio e orquestracao.
+- Banco e dados: Prisma, schema, migracoes, seeds e consistencia dos indicadores.
+- IA e prompts: adaptador do provedor, prompts, validacao de respostas e fallback.
+- Documentacao e QA: checklist da entrega, testes manuais, relato do processo e organizacao dos documentos.
+
+### Criterios de pronto do MVP
+
+O MVP pode ser considerado pronto para apresentacao quando:
+
+- O projeto roda localmente com comandos documentados.
+- Existe pelo menos uma empresa pesquisavel do inicio ao fim do fluxo.
+- A tela de detalhe mostra indicadores, historico, fonte e data.
+- Uma analise pode ser criada, consultada e persistida.
+- O valuation mostra preco justo, premissas, upside e nivel de confianca.
+- A recomendacao deixa claro o perfil ou objetivo considerado.
+- Erros comuns possuem mensagem compreensivel no frontend.
+- O documento de prompt ops registra pelo menos os prompts usados na IA.
+
+## 10. Riscos, falhas e duvidas
 
 ### Riscos e falhas esperados
 
@@ -549,8 +824,8 @@ Resposta resumida:
 ### Duvidas em aberto
 
 - Qual conjunto minimo de indicadores financeiros deve ser obrigatorio na tela inicial de detalhe?
-- O valuation do MVP usara apenas regras deterministicas ou combinara calculo classico com apoio generativo?
-- A recomendacao deve ser apenas textual ou incluir sinal padronizado, como `comprar`, `monitorar` ou `evitar`?
+- Qual tabela de multiplos por setor sera usada no valuation simplificado?
+- Quais limites de `upsidePct` serao usados para mapear recomendacao em `buy`, `monitor` ou `avoid`?
 - O perfil do usuario sera explicitamente cadastrado ou inferido a partir de perguntas no fluxo?
 
 ### Proximos refinamentos recomendados

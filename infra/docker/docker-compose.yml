@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: investai-postgres
+    environment:
+      POSTGRES_USER: investai
+      POSTGRES_PASSWORD: investai
+      POSTGRES_DB: investai
+    ports:
+      - "5432:5432"
+    volumes:
+      - investai-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  investai-postgres-data:
