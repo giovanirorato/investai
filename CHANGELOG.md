@@ -20,6 +20,13 @@ Este arquivo registra as implementacoes e mudancas relevantes do projeto em orde
   - `packages/shared/package.json`
   - `infra/docker/docker-compose.yml`
 - Adicionados placeholders `.gitkeep` para manter pastas vazias versionadas.
+- Criado setup raiz com `package.json`, workspaces npm, `tsconfig.base.json`, `.gitignore` e `.env.example`.
+- Implementada API minima em Express com endpoint `GET /health`.
+- Adicionado schema Prisma inicial com entidades de empresas, snapshots, historico, analises, valuation, recomendacoes e perfis.
+- Adicionada migration inicial do Prisma para PostgreSQL.
+- Criado seed inicial com 5 empresas e 2 perfis de usuario.
+- Criado frontend minimo com React e Vite para validar o status da API.
+- Criado pacote `packages/shared` com contratos e schemas iniciais.
 
 ### Alterado
 
@@ -29,8 +36,10 @@ Este arquivo registra as implementacoes e mudancas relevantes do projeto em orde
 - Atualizada a estrutura de pastas recomendada para refletir o monorepo adotado.
 - Adicionadas regras iniciais de valuation deterministico e recomendacao.
 - Adicionados enums, formato padrao de erro e guia de implementacao por fases.
+- Atualizado `README.md` com comandos para instalar, subir banco, rodar migrations, seed e servidores locais.
+- Ajustado `infra/docker/docker-compose.yml` para usar variaveis de ambiente e healthcheck do PostgreSQL.
 
 ### Observacoes
 
-- O projeto ainda nao possui implementacao funcional de frontend, backend ou banco.
-- A proxima etapa recomendada e configurar os workspaces, scripts de desenvolvimento e modelos iniciais do Prisma.
+- O projeto agora possui setup local minimo, mas os endpoints funcionais do produto ainda precisam ser implementados.
+- A proxima etapa recomendada e implementar `GET /companies` e `GET /companies/:companyId` usando o Prisma.

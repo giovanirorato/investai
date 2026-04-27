@@ -7,4 +7,147 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modelos serao adicionados na Fase 1/2 conforme a spec.
+enum AnalysisStatus {
+  queued
+  processing
+  partial
+  completed
+  failed
+}
+
+enum ConfidenceLevel {
+  low
+  medium
+  high
+}
+
+enum RecommendationType {
+  buy
+  monitor
+  avoid
+}
+
+enum RiskTolerance {
+  low
+  medium
+  high
+}
+
+model UserProfile {
+  id                String           @id @default(cuid())
+  type              String
+  riskTolerance     RiskTolerance
+  objective         String?
+  investmentHorizon String?
+  recommendations   Recommendation[]
+  analysisRequests  AnalysisRequest[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+}
+
+model Company {
+  id                 String              @id @default(cuid())
+  ticker             String              @unique
+  name               String
+  sector             String
+  market             String
+  financialSnapshots FinancialSnapshot[]
+  historicalSeries   HistoricalSeries[]
+  analysisRequests   AnalysisRequest[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([ticker])
+  @@index([sector])
+}
+
+model FinancialSnapshot {
+  id                String   @id @default(cuid())
+  companyId         String
+  referenceDate     DateTime
+  currentPrice      Decimal? @db.Decimal(12, 2)
+  earningsPerShare  Decimal? @db.Decimal(12, 4)
+  peRatio           Decimal? @db.Decimal(10, 2)
+  revenue           Decimal? @db.Decimal(18, 2)
+  ebitda            Decimal? @db.Decimal(18, 2)
+  netIncome         Decimal? @db.Decimal(18, 2)
+  debt              Decimal? @db.Decimal(18, 2)
+  source            String
+  company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+
+  @@index([companyId, referenceDate])
+}
+
+model HistoricalSeries {
+  id        String   @id @default(cuid())
+  companyId String
+  metric    String
+  period    DateTime
+  value     Decimal  @db.Decimal(18, 4)
+  source    String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([companyId, metric, period])
+}
+
+model AnalysisRequest {
+  id              String          @id @default(cuid())
+  companyId       String
+  userProfileId   String?
+  requestedBy     String?
+  objective       String?
+  status          AnalysisStatus  @default(queued)
+  requestedAt     DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  company         Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userProfile     UserProfile?    @relation(fields: [userProfileId], references: [id], onDelete: SetNull)
+  analysisResult  AnalysisResult?
+
+  @@index([companyId, status])
+  @@index([userProfileId])
+}
+
+model AnalysisResult {
+  id                    String           @id @default(cuid())
+  analysisRequestId     String           @unique
+  classificationSummary String
+  confidenceLevel       ConfidenceLevel
+  modelVersion          String?
+  dataSources           Json?
+  generatedAt           DateTime         @default(now())
+  analysisRequest       AnalysisRequest  @relation(fields: [analysisRequestId], references: [id], onDelete: Cascade)
+  valuationResult       ValuationResult?
+  recommendations       Recommendation[]
+}
+
+model ValuationResult {
+  id                String         @id @default(cuid())
+  analysisResultId  String         @unique
+  fairPrice         Decimal        @db.Decimal(12, 2)
+  upsidePct         Decimal        @db.Decimal(8, 4)
+  targetPeRatio     Decimal?       @db.Decimal(8, 2)
+  method            String
+  rationaleSummary  String
+  assumptions       Json?
+  createdAt         DateTime       @default(now())
+  analysisResult    AnalysisResult @relation(fields: [analysisResultId], references: [id], onDelete: Cascade)
+}
+
+model Recommendation {
+  id                 String             @id @default(cuid())
+  analysisResultId   String
+  userProfileId      String?
+  recommendationType RecommendationType
+  summary            String
+  nextAction         String
+  objective          String?
+  confidenceLevel    ConfidenceLevel?
+  generatedAt        DateTime           @default(now())
+  analysisResult     AnalysisResult     @relation(fields: [analysisResultId], references: [id], onDelete: Cascade)
+  userProfile        UserProfile?       @relation(fields: [userProfileId], references: [id], onDelete: SetNull)
+
+  @@index([analysisResultId])
+  @@index([userProfileId])
+}

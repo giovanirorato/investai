@@ -69,19 +69,91 @@ Para organização do projeto.
 
 O projeto usara `TypeScript` como linguagem principal. Essa decisao orienta a implementacao do frontend e do backend, reduz a fragmentacao tecnologica e simplifica manutencao, tipagem e compartilhamento de contratos entre camadas.
 
+## Como rodar localmente
+
+Pre-requisitos:
+
+- Node.js 22 ou superior.
+- Docker e Docker Compose.
+- npm.
+
+Passos:
+
+```bash
+cp .env.example .env
+npm install
+npm run db:up
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
+
+URLs locais:
+
+- Frontend: `http://localhost:5173`
+- API: `http://localhost:3333`
+- Healthcheck da API: `http://localhost:3333/health`
+
+Comandos uteis:
+
+```bash
+npm run dev:api
+npm run dev:web
+npm run typecheck
+npm run build
+npm run db:down
+```
+
+## Estrutura do projeto
+
+```text
+.
+├── apps
+│   ├── api
+│   │   ├── prisma
+│   │   └── src
+│   └── web
+│       └── src
+├── packages
+│   └── shared
+├── infra
+│   └── docker
+├── docs
+├── spec
+└── CHANGELOG.md
+```
+
+- `apps/api`: backend Node.js com Express, Prisma e PostgreSQL.
+- `apps/web`: frontend React com Vite.
+- `packages/shared`: tipos, contratos e schemas compartilhados.
+- `infra/docker`: dependencias locais, como PostgreSQL.
+- `spec`: documento-base do produto e duvidas.
+- `docs`: documentos da entrega, arquitetura, planejamento, processo e prompt ops.
+
 ## Documentacao atual
 
 ```text
 .
 ├── README.md
+├── CHANGELOG.md
+├── apps
+├── packages
+├── infra
+├── spec
 └── docs
     ├── entregas
     │   └── entrega-parcial-levelup.md
+    ├── arquitetura
+    ├── planejamento
+    ├── processo
+    ├── prompt-ops
     └── visao-geral
         └── briefing-do-produto.md
 ```
 
 - `README.md`: ponto de entrada do projeto e indice da documentacao.
+- `CHANGELOG.md`: registro cronologico das implementacoes por data.
+- `spec/spec.md`: especificacao consolidada do produto e do MVP academico.
 - `docs/visao-geral/briefing-do-produto.md`: contexto do desafio, proposta de valor, escopo inicial e arquitetura base.
 - `docs/entregas/entrega-parcial-levelup.md`: checklist dos requisitos da entrega parcial.
 

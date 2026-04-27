@@ -1,0 +1,26 @@
+{
+  "name": "investai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace @investai/api\" \"npm run dev --workspace @investai/web\"",
+    "dev:api": "npm run dev --workspace @investai/api",
+    "dev:web": "npm run dev --workspace @investai/web",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "db:up": "docker compose -f infra/docker/docker-compose.yml up -d",
+    "db:down": "docker compose -f infra/docker/docker-compose.yml down",
+    "db:migrate": "npm run prisma:migrate --workspace @investai/api",
+    "db:seed": "npm run prisma:seed --workspace @investai/api",
+    "prisma:generate": "npm run prisma:generate --workspace @investai/api",
+    "prisma:validate": "npm run prisma:validate --workspace @investai/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
