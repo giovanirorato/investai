@@ -125,8 +125,8 @@ model AnalysisResult {
 model ValuationResult {
   id                String         @id @default(cuid())
   analysisResultId  String         @unique
-  fairPrice         Decimal        @db.Decimal(12, 2)
-  upsidePct         Decimal        @db.Decimal(8, 4)
+  fairPrice         Decimal?       @db.Decimal(12, 2)
+  upsidePct         Decimal?       @db.Decimal(8, 4)
   targetPeRatio     Decimal?       @db.Decimal(8, 2)
   method            String
   rationaleSummary  String

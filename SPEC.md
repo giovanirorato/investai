@@ -348,13 +348,11 @@ Os documentos base existentes permanecem como ponto de entrada do projeto:
 ```text
 .
   README.md
+  SPEC.md
   definicoes.md
   docs/
     entregas/
     visao-geral/
-  spec/
-    spec.md
-    duvidas.md
 ```
 
 Para a implementacao, a estrutura adotada e um monorepo simples, com poucas camadas e responsabilidades claras:
@@ -398,6 +396,7 @@ Para a implementacao, a estrutura adotada e um monorepo simples, com poucas cama
   infra/
     docker/
       docker-compose.yml
+  SPEC.md
   docs/
     arquitetura/
     entregas/
@@ -405,9 +404,6 @@ Para a implementacao, a estrutura adotada e um monorepo simples, com poucas cama
     processo/
     prompt-ops/
     visao-geral/
-  spec/
-    spec.md
-    duvidas.md
 ```
 
 Responsabilidades principais:
@@ -422,7 +418,7 @@ Responsabilidades principais:
 - `packages/shared`: tipos, DTOs e schemas compartilhados entre frontend e backend.
 - `infra/docker`: configuracao local para subir PostgreSQL e dependencias de desenvolvimento.
 - `docs`: documentos derivados da entrega parcial, separados por arquitetura, planejamento, processo e prompt ops.
-- `spec`: documento-base consolidado e duvidas ainda nao resolvidas.
+- `SPEC.md`: documento-base consolidado; duvidas ainda nao resolvidas ficam na secao 10.
 
 Essa estrutura reduz a quantidade de pacotes, mas ainda preserva separacao suficiente para o time dividir tarefas. `Assuncao`: se o grupo tiver pouco tempo, `packages/shared` pode ser criado apenas quando houver tipos duplicados entre frontend e backend.
 

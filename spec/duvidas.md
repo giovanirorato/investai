@@ -1,4 +1,0 @@
-# Dúvidas
-
-Para esclarecimentos
-

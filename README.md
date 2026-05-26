@@ -119,7 +119,7 @@ npm run db:down
 ├── infra
 │   └── docker
 ├── docs
-├── spec
+├── SPEC.md
 └── CHANGELOG.md
 ```
 
@@ -127,7 +127,7 @@ npm run db:down
 - `apps/web`: frontend React com Vite.
 - `packages/shared`: tipos, contratos e schemas compartilhados.
 - `infra/docker`: dependencias locais, como PostgreSQL.
-- `spec`: documento-base do produto e duvidas.
+- `SPEC.md`: documento-base do produto, escopo do MVP e duvidas abertas.
 - `docs`: documentos da entrega, arquitetura, planejamento, processo e prompt ops.
 
 ## Documentacao atual
@@ -136,10 +136,10 @@ npm run db:down
 .
 ├── README.md
 ├── CHANGELOG.md
+├── SPEC.md
 ├── apps
 ├── packages
 ├── infra
-├── spec
 └── docs
     ├── entregas
     │   └── entrega-parcial-levelup.md
@@ -153,13 +153,13 @@ npm run db:down
 
 - `README.md`: ponto de entrada do projeto e indice da documentacao.
 - `CHANGELOG.md`: registro cronologico das implementacoes por data.
-- `spec/spec.md`: especificacao consolidada do produto e do MVP academico.
+- `SPEC.md`: especificacao consolidada do produto e do MVP academico.
 - `docs/visao-geral/briefing-do-produto.md`: contexto do desafio, proposta de valor, escopo inicial e arquitetura base.
 - `docs/entregas/entrega-parcial-levelup.md`: checklist dos requisitos da entrega parcial.
 
 ## Convencao de organizacao
 
-- Usar nomes de arquivos em minusculas, com palavras separadas por hifens.
+- Usar nomes de arquivos em minusculas, com palavras separadas por hifens, exceto documentos-base na raiz como `README.md`, `SPEC.md` e `CHANGELOG.md`.
 - Separar documentos por objetivo: visao do produto, entregas, arquitetura, planejamento.
 - Manter o `README.md` enxuto, sempre apontando para os documentos principais.
 

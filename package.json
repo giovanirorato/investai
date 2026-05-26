@@ -4,15 +4,16 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev --workspace @investai/api\" \"npm run dev --workspace @investai/web\"",
-    "dev:api": "npm run dev --workspace @investai/api",
+    "dev": "npm run build --workspace @investai/shared && concurrently \"npm run dev --workspace @investai/api\" \"npm run dev --workspace @investai/web\"",
+    "dev:api": "npm run build --workspace @investai/shared && npm run dev --workspace @investai/api",
     "dev:web": "npm run dev --workspace @investai/web",
-    "build": "npm run build --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "build": "npm run build --workspace @investai/shared && npm run build --workspace @investai/api && npm run build --workspace @investai/web",
+    "typecheck": "npm run build --workspace @investai/shared && npm run typecheck --workspace @investai/shared && npm run typecheck --workspace @investai/api && npm run typecheck --workspace @investai/web",
+    "test": "npm run build --workspace @investai/shared && vitest run",
     "db:up": "docker compose -f infra/docker/docker-compose.yml up -d",
     "db:down": "docker compose -f infra/docker/docker-compose.yml down",
     "db:migrate": "npm run prisma:migrate --workspace @investai/api",
@@ -21,6 +22,7 @@
     "prisma:validate": "npm run prisma:validate --workspace @investai/api"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "vitest": "^4.1.7"
   }
 }

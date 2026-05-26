@@ -2,6 +2,22 @@
 
 Este arquivo registra as implementacoes e mudancas relevantes do projeto em ordem cronologica, usando o formato `AAAA-MM-DD`.
 
+## 2026-05-26
+
+### Adicionado
+
+- Criado `AGENTS.md` com regras do InvestAI para uso de IA, valuation deterministico, fallback e verificacao.
+- Implementados contratos compartilhados para empresas, analises, erros e recomendacoes.
+- Implementados endpoints de busca, detalhe, analise, consulta de analise e recomendacao.
+- Adicionados modulos de valuation deterministico, recomendacao por regra e adaptador OpenRouter opcional.
+- Substituida a tela placeholder por fluxo funcional de busca, detalhe, grafico, analise e recomendacao.
+- Adicionados testes unitarios com Vitest para contratos, valuation, recomendacao e fallback de classificacao.
+
+### Alterado
+
+- Ajustados scripts de build, typecheck e test para compilar `@investai/shared` antes de `apps/api` e `apps/web`.
+- Permitido persistir valuation parcial com `fairPrice` e `upsidePct` nulos.
+
 ## 2026-04-26
 
 ### Adicionado
@@ -30,7 +46,7 @@ Este arquivo registra as implementacoes e mudancas relevantes do projeto em orde
 
 ### Alterado
 
-- Atualizada `spec/spec.md` para orientar o desenvolvimento por uma equipe academica.
+- Atualizada `SPEC.md` para orientar o desenvolvimento por uma equipe academica.
 - Definido MVP academico recomendado, com itens obrigatorios e opcionais.
 - Ajustada a stack proposta para `React`, `Vite`, `Node.js`, `Express` ou `Fastify`, `Prisma`, `PostgreSQL`, `Zod` e `Recharts`.
 - Atualizada a estrutura de pastas recomendada para refletir o monorepo adotado.
