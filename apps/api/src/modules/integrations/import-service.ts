@@ -1,26 +1,25 @@
-const statusCompanies =
-  await loadStatusInvest();
+import { loadStatusInvestCsv } from "./providers/statusinvest-provider.js";
+import { prisma } from "../../shared/prisma.js";
 
-for (const company of statusCompanies) {
+const companies = loadStatusInvestCsv();
 
-  const brapi =
-    await getBrapiData(
-      company.ticker
-    );
-
-  const fundamentus =
-    await getFundamentusData(
-      company.ticker
-    );
-
-  const merged =
-    mergeCompanyData(
-      brapi,
-      company,
-      fundamentus
-    );
-
-  await saveCompany(
-    merged
-  );
+for (const company of companies) {
+  await prisma.company.upsert({
+    where: {
+      ticker: company.ticker
+    },
+    update: {
+      market: company.market ?? "B3"
+    },
+    create: {
+      ticker: company.ticker,
+      name: company.name ?? company.ticker,
+      sector: company.sector ?? "Nao informado",
+      market: company.market ?? "B3"
+    }
+  });
 }
+
+console.log(`Empresas importadas/atualizadas: ${companies.length}`);
+
+await prisma.$disconnect();

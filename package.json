@@ -20,7 +20,7 @@
     "db:seed": "npm run prisma:seed --workspace @investai/api",
     "prisma:generate": "npm run prisma:generate --workspace @investai/api",
     "prisma:validate": "npm run prisma:validate --workspace @investai/api",
-    "import:companies": "tsx src/modules/integrations/import-service.ts"
+    "import:companies": "tsx apps/api/src/modules/integrations/import-service.ts"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
