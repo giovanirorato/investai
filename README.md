@@ -101,6 +101,7 @@ npm run dev:api
 npm run dev:web
 npm run typecheck
 npm run build
+npm run prisma:generate
 npm run db:down
 ```
 
