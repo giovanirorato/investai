@@ -7,12 +7,12 @@ Plataforma de apoio a decisao para analise de empresas listadas em bolsa, identi
 @Allanzin178
 Allan
 Awaiting Allanzin178’s response
-Pending Invite
+Allanzin178 • Collaborator
  
- @Daniell061
+ @Danimell061
 Daniel Francisco Evangelista de Sousa
 Awaiting Daniell061’s response
-Pending Invite
+Danimell061 • Collaborator
  
  @DevKalleby
 DevKalleby
@@ -85,6 +85,7 @@ npm install
 npm run db:up
 npm run db:migrate
 npm run db:seed
+npm run import:companies
 npm run dev
 ```
 
@@ -99,6 +100,7 @@ Comandos uteis:
 ```bash
 npm run dev:api
 npm run dev:web
+npm run prisma:generate
 npm run typecheck
 npm run build
 npm run prisma:generate
