@@ -22,27 +22,34 @@ export async function generateRecommendationText(
   input: RecommendationTextInput,
   completeJson: JsonCompleter = completeJsonWithOpenRouter
 ) {
+  console.log("✍️  generateRecommendationText chamada com tipo:", input.recommendationType);
   const llmResponse = await completeJson({
     systemPrompt:
-      "Voce redige recomendacoes do InvestAI. Responda somente JSON valido. Nao altere o recommendationType e nao invente numeros.",
+      "You are an investment advisor. Generate investment recommendations. Respond ONLY with valid JSON. Do not write anything except the JSON object. The JSON must have exactly these two fields: summary (string, minimum 12 characters) and nextAction (string, minimum 8 characters). Do not invent numbers or change the recommendation signal. Answer in brazillian portuguese",
     userPrompt: JSON.stringify({
-      expectedShape: {
-        summary: "string",
-        nextAction: "string"
+      instruction: "Generate recommendation text based on financial analysis",
+      signal: input.recommendationType,
+      confidence: input.confidenceLevel,
+      objective: input.objective || "not specified",
+      analysis: {
+        upside: input.context.upsidePct,
+        fairPrice: input.context.fairPrice,
+        method: input.context.method
       },
-      recommendationType: input.recommendationType,
-      objective: input.objective,
-      confidenceLevel: input.confidenceLevel,
-      context: input.context
+      task: "Return ONLY JSON with summary and nextAction. Don't explain the signal, just provide clear text about it."
     })
   });
 
   const parsed = RecommendationTextSchema.safeParse(llmResponse);
 
   if (parsed.success) {
+    console.log("✅ Texto de recomendação gerado pela IA");
     return parsed.data;
   }
 
+  console.log("⚠️  Resposta da IA inválida:");
+  console.log("   Recebido:", JSON.stringify(llmResponse, null, 2));
+  console.log("   Erro de validação:", parsed.error.errors);
   return fallbackRecommendationText(
     input.recommendationType,
     input.objective,

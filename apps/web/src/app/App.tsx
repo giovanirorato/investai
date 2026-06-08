@@ -47,7 +47,7 @@ const percentFormatter = new Intl.NumberFormat("pt-BR", {
 
 export function App() {
   const [apiStatus, setApiStatus] = useState<ApiStatus>("checking");
-  const [query, setQuery] = useState("BBAS3");
+  const [query, setQuery] = useState("");
   const [objective, setObjective] = useState("crescimento com risco moderado");
   const [companies, setCompanies] = useState<CompanySummary[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<CompanyDetailResponse | null>(null);
@@ -86,7 +86,7 @@ export function App() {
 
       try {
         const result = await requestJson<CompanySearchResponse>(
-          `${apiUrl}/companies?query=${encodeURIComponent(searchQuery)}&limit=8`
+          `${apiUrl}/companies?query=${encodeURIComponent(searchQuery)}`
         );
         setCompanies(result.items);
         setAnalysis(null);
@@ -120,7 +120,7 @@ export function App() {
         setApiStatus("offline");
       });
 
-    searchCompanies("BBAS3").catch(() => undefined);
+    searchCompanies("").catch(() => undefined);
 
     return () => controller.abort();
   }, [searchCompanies]);
