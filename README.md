@@ -76,6 +76,8 @@ Pre-requisitos:
 - Node.js 22 ou superior.
 - Docker e Docker Compose.
 - npm.
+- Chave de API do openrouter.
+- Chave de API do brapi.
 
 Passos:
 
@@ -85,6 +87,16 @@ npm install
 npm run db:up
 npm run db:migrate
 npm run prisma:generate
+```
+Coloque todas as informacoes necessarias no .env para que a aplicação rode com uso de IA e com as informações das empresas
+Após colocar a api da brapi no .env, use o comando 
+
+```bash
+npm run import:companies
+```
+
+Para rodar use:
+```bash
 npm run dev
 ```
 

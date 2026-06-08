@@ -35,20 +35,20 @@ export function fallbackRecommendationText(
 
   if (recommendationType === "buy") {
     return {
-      summary: `Comprar pode fazer sentido${objectiveText}, pois o upside calculado e relevante e a confianca esta ${confidenceLevel}.`,
+      summary: `Comprar pode fazer sentido${objectiveText}, pois o upside calculado é relevante e a confiança está ${confidenceLevel}.`,
       nextAction: "Revisar as premissas do valuation e comparar com empresas do mesmo setor."
     };
   }
 
   if (recommendationType === "avoid") {
     return {
-      summary: `Evitar nova posicao agora${objectiveText}, pois o ativo nao apresenta margem suficiente ou faltam dados criticos.`,
-      nextAction: "Aguardar dados financeiros completos antes de tomar decisao."
+      summary: `Evitar nova posição agora${objectiveText}, pois o ativo não apresenta margem suficiente ou faltam dados criticos.`,
+      nextAction: "Aguardar dados financeiros completos antes de tomar decisão."
     };
   }
 
   return {
-    summary: `Monitorar parece mais prudente${objectiveText}, pois o upside ou a confianca ainda nao justificam compra direta.`,
+    summary: `Monitorar parece mais prudente${objectiveText}, pois o upside ou a confiança ainda não justificam compra direta.`,
     nextAction: "Acompanhar novos resultados e recalcular o valuation quando houver dados atualizados."
   };
 }
