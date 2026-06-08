@@ -18,8 +18,10 @@
     "db:down": "docker compose -f infra/docker/docker-compose.yml down",
     "db:migrate": "npm run prisma:migrate --workspace @investai/api",
     "db:seed": "npm run prisma:seed --workspace @investai/api",
-    "prisma:generate": "npm run prisma:generate --workspace @investai/api",
+    "prisma:generate": "prisma generate --schema=apps/api/prisma/schema.prisma",
     "prisma:validate": "npm run prisma:validate --workspace @investai/api",
+    "prisma:studio": "prisma studio --schema=apps/api/prisma/schema.prisma",
+    "prisma:reset": "npx prisma migrate reset --schema=apps/api/prisma/schema.prisma",
     "import:companies": "tsx apps/api/src/modules/integrations/import-service.ts"
   },
   "devDependencies": {

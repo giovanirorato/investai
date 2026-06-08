@@ -1,3 +1,8 @@
+export type HistoricalPoint = {
+  date: Date;
+  value: number;
+};
+
 export interface CompanyImportData {
   ticker: string;
   name?: string;
@@ -10,5 +15,5 @@ export interface CompanyImportData {
   ebitda?: number;
   netIncome?: number;
   debt?: number;
-  history?: number[];
+  history?: HistoricalPoint[];
 }

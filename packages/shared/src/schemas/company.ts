@@ -11,9 +11,9 @@ export const CompanySummarySchema = z.object({
 });
 
 export const CompanySearchQuerySchema = z.object({
-  query: z.string().trim().min(1, "query e obrigatorio"),
+  query: z.string().trim().optional().default(""),
   sector: z.string().trim().optional(),
-  limit: z.coerce.number().int().min(1).max(50).default(10)
+  limit: z.coerce.number().int().min(1).max(100).default(50)
 });
 
 export const FinancialSnapshotSchema = z.object({

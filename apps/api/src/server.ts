@@ -49,40 +49,51 @@ app.get(
   "/companies",
   asyncHandler(async (request, response) => {
     const query = CompanySearchQuerySchema.parse(request.query);
-    const where: Prisma.CompanyWhereInput = {
-      AND: [
-        {
-          OR: [
-            {
-              ticker: {
-                contains: query.query,
-                mode: "insensitive"
-              }
-            },
-            {
-              name: {
-                contains: query.query,
-                mode: "insensitive"
-              }
-            },
-            {
-              sector: {
-                contains: query.query,
-                mode: "insensitive"
-              }
+
+    const search = query.query?.trim() ?? "";
+
+    const andFilters: Prisma.CompanyWhereInput[] = [];
+
+    if (search.length > 0) {
+      andFilters.push({
+        OR: [
+          {
+            ticker: {
+              contains: search,
+              mode: "insensitive"
             }
-          ]
-        },
-        query.sector
-          ? {
-              sector: {
-                contains: query.sector,
-                mode: "insensitive"
-              }
+          },
+          {
+            name: {
+              contains: search,
+              mode: "insensitive"
             }
-          : {}
-      ]
-    };
+          },
+          {
+            sector: {
+              contains: search,
+              mode: "insensitive"
+            }
+          }
+        ]
+      });
+    }
+
+    if (query.sector) {
+      andFilters.push({
+        sector: {
+          contains: query.sector,
+          mode: "insensitive"
+        }
+      });
+    }
+
+    const where: Prisma.CompanyWhereInput =
+      andFilters.length > 0
+        ? {
+            AND: andFilters
+          }
+        : {};
 
     const companies = await prisma.company.findMany({
       where,

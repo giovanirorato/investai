@@ -76,10 +76,10 @@ export function App() {
 
   const searchCompanies = useCallback(
     async (searchQuery: string) => {
-      if (!searchQuery.trim()) {
-        setError("Informe um nome, ticker ou setor.");
-        return;
-      }
+      // if (!searchQuery.trim()) {
+      //   setError("Informe um nome, ticker ou setor.");
+      //   return;
+      // }
 
       setLoadState("loading");
       setError(null);

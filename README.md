@@ -84,8 +84,7 @@ cp .env.example .env
 npm install
 npm run db:up
 npm run db:migrate
-npm run db:seed
-npm run import:companies
+npm run prisma:generate
 npm run dev
 ```
 
@@ -100,7 +99,10 @@ Comandos uteis:
 ```bash
 npm run dev:api
 npm run dev:web
+npm run import:companies
 npm run prisma:generate
+npm run prisma:studio
+npm run prisma:reset
 npm run typecheck
 npm run build
 npm run db:down
