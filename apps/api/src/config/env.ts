@@ -9,6 +9,7 @@ const EnvSchema = z.object({
     .string()
     .min(1)
     .default("postgresql://investai:investai@localhost:5432/investai?schema=public"),
+  BRAPI_API_KEY: z.string().optional(),
   OPENROUTER_API_KEY: z.string().optional(),
   OPENROUTER_MODEL: z.string().default("mistralai/mistral-small-3.1-24b-instruct"),
   OPENROUTER_TIMEOUT_MS: z.coerce.number().int().positive().default(8000)
