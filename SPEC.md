@@ -181,9 +181,9 @@ Opcional se houver tempo:
 
 1. Usuario solicita analise de uma empresa.
 2. Backend cria um `AnalysisRequest`.
-3. Agente de Coleta busca e consolida dados.
+3. Etapa de coleta local recupera e consolida dados persistidos.
 4. Agente de Classificacao enquadra a empresa.
-5. Agente de Valuation calcula preco justo e sinaliza oportunidade.
+5. Regra de valuation calcula preco justo e sinaliza oportunidade.
 6. Resultado consolidado e persistido como `AnalysisResult` e `ValuationResult`.
 
 #### Fluxo 3 - Recomendacao personalizada
@@ -201,7 +201,7 @@ Opcional se houver tempo:
 - RF02: exibir detalhes basicos da empresa, incluindo indicadores financeiros essenciais.
 - RF03: exibir historico resumido e graficos basicos da empresa.
 - RF04: permitir solicitar analise automatizada de uma empresa.
-- RF05: orquestrar agentes de coleta, classificacao, valuation e recomendacao.
+- RF05: orquestrar coleta local, classificacao, valuation e recomendacao.
 - RF06: persistir pedidos de analise, resultados e status de execucao.
 - RF07: gerar valuation com preco justo, racional resumido e sinalizacao de oportunidade.
 - RF08: gerar recomendacao alinhada ao perfil ou objetivo do usuario.
@@ -322,17 +322,16 @@ Tarefas derivadas:
 
 ## 7. Arquitetura inicial
 
-### Stack proposta
+### Stack adotada no MVP
 
 - Frontend: `React`, `Vite` e `TypeScript`.
-- Backend: `Node.js`, `Express` ou `Fastify` e `TypeScript`.
-- Validacao de dados: `Zod` ou biblioteca equivalente.
+- Backend: `Node.js`, `Express` e `TypeScript`.
+- Validacao de dados: `Zod`.
 - ORM e banco: `Prisma` com `PostgreSQL`.
-- Graficos: biblioteca simples no frontend, como `Recharts` ou equivalente.
+- Graficos: `Recharts`.
 - IA: `OpenRouter` ou outro provedor compativel, isolado atras de um adaptador.
-- Dados de mercado no MVP: primeiro `seed` local; depois `Yahoo Finance`, `Alpha Vantage` ou equivalente.
+- Dados de mercado no MVP: `seed` local; integracoes externas ficam para fase futura.
 - Busca/indexacao avancada: `Elasticsearch` somente em fase futura.
-- `Assuncao`: a equipe deve escolher `Express` ou `Fastify`, nao ambos.
 - `Assuncao`: manter `OpenRouter` como opcao pratica para acesso a modelos open-source, conforme `definicoes.md`.
 
 ### Ferramentas de IA e classificacao de custo
@@ -364,13 +363,8 @@ Para a implementacao, a estrutura adotada e um monorepo simples, com poucas cama
       package.json
       src/
         app/
-        components/
-        features/
-          companies/
-          analysis/
-          recommendations/
-        services/
         styles/
+        main.tsx
     api/
       package.json
       prisma/
@@ -382,10 +376,8 @@ Para a implementacao, a estrutura adotada e um monorepo simples, com poucas cama
           analysis/
           recommendations/
           agents/
-          integrations/
           valuation/
         shared/
-        jobs/
         config/
   packages/
     shared/
@@ -409,25 +401,25 @@ Para a implementacao, a estrutura adotada e um monorepo simples, com poucas cama
 Responsabilidades principais:
 
 - `apps/web`: interface React, fluxos de busca, detalhe de empresa, status de analise e recomendacoes.
-- `apps/api`: API Node.js, regras de negocio, orquestracao dos agentes, integracoes externas e persistencia.
+- `apps/api`: API Node.js, regras de negocio, orquestracao do fluxo de analise e persistencia.
 - `apps/api/prisma`: schema do banco, migracoes e dados iniciais para demonstracao.
 - `apps/api/src/modules`: modulos de negocio separados por responsabilidade.
 - `apps/api/src/modules/valuation`: calculos deterministicos de valuation e premissas usadas.
 - `apps/api/src/modules/agents`: chamadas para IA, prompts, validacao da resposta e fallback.
-- `apps/api/src/modules/integrations`: adaptadores para APIs externas, mantendo o restante do backend desacoplado.
+- `apps/api/src/modules/integrations`: pasta futura para adaptadores de APIs externas, caso o MVP evolua para dados de mercado em tempo real.
 - `packages/shared`: tipos, DTOs e schemas compartilhados entre frontend e backend.
 - `infra/docker`: configuracao local para subir PostgreSQL e dependencias de desenvolvimento.
 - `docs`: documentos derivados da entrega parcial, separados por arquitetura, planejamento, processo e prompt ops.
 - `SPEC.md`: documento-base consolidado; duvidas ainda nao resolvidas ficam na secao 10.
 
-Essa estrutura reduz a quantidade de pacotes, mas ainda preserva separacao suficiente para o time dividir tarefas. `Assuncao`: se o grupo tiver pouco tempo, `packages/shared` pode ser criado apenas quando houver tipos duplicados entre frontend e backend.
+Essa estrutura reduz a quantidade de pacotes, mas ainda preserva separacao suficiente para o time dividir tarefas. O pacote `packages/shared` ja faz parte do MVP atual e concentra contratos usados pela API e pelo frontend.
 
 ### Componentes principais
 
 - Frontend web: busca, detalhe da empresa, status de analise e visualizacao de recomendacao.
-- API backend: recebe requisicoes do frontend, valida entrada, orquestra integracoes e consolida respostas.
-- Camada de integracao: conecta APIs de mercado e provedores de IA.
-- Camada de agentes: encapsula papeis de coleta, classificacao, valuation e recomendacao.
+- API backend: recebe requisicoes do frontend, valida entrada, executa regras de negocio e consolida respostas.
+- Camada de integracao: no MVP atual cobre o provedor de IA; APIs de mercado ficam para fase futura.
+- Camada de agentes e regras: encapsula coleta local, classificacao, valuation e recomendacao.
 - Persistencia: armazena empresas, snapshots, pedidos de analise, resultados e perfis.
 
 ### Agentes do sistema
@@ -436,7 +428,8 @@ Essa estrutura reduz a quantidade de pacotes, mas ainda preserva separacao sufic
 
 - Entrada: identificador da empresa e parametros da analise.
 - Saida: dados financeiros, historicos e metadados de origem.
-- Dependencias: provedores de mercado e camada de persistencia.
+- Dependencias no MVP atual: dados persistidos em `Company`, `FinancialSnapshot` e `HistoricalSeries`.
+- Evolucao futura: adaptadores para provedores de mercado podem substituir ou complementar o `seed` local.
 
 #### Agente de Classificacao
 
@@ -448,7 +441,7 @@ Essa estrutura reduz a quantidade de pacotes, mas ainda preserva separacao sufic
 
 - Entrada: dados consolidados e classificacao da empresa.
 - Saida: preco justo, sinalizacao de oportunidade e resumo do racional.
-- Dependencias: regras financeiras, possivel apoio de IA e persistencia do resultado.
+- Dependencias: regras financeiras deterministicamente implementadas em TypeScript e persistencia do resultado.
 
 #### Regra inicial de valuation para o MVP
 
@@ -466,6 +459,8 @@ Exemplo de tabela inicial de multiplos:
 | --- | --- |
 | Financeiro | 8 |
 | Energia | 10 |
+| Mineracao | 9 |
+| Industria | 14 |
 | Varejo | 12 |
 | Tecnologia | 18 |
 | Outro | 10 |
@@ -482,18 +477,18 @@ Se `currentPrice` ou `earningsPerShare` estiver ausente, o valuation deve retorn
 
 O sinal padronizado deve ser gerado por regra simples antes de qualquer texto da IA:
 
-- `buy`: `upsidePct >= 0.15`, confianca `medium` ou `high` e perfil compativel com risco do ativo.
-- `monitor`: `upsidePct` entre `-0.05` e `0.15`, ou confianca `low`, ou dados parcialmente completos.
-- `avoid`: `upsidePct < -0.05`, dados criticos ausentes ou incompatibilidade clara com o perfil informado.
+- `buy`: `upsidePct >= 0.15` e confianca `medium` ou `high`.
+- `monitor`: quando nao houver sinal suficiente para compra ou rejeicao direta.
+- `avoid`: `upsidePct < -0.05` ou `upsidePct` ausente por falta de dados criticos.
 
-A IA deve transformar esse sinal em uma explicacao legivel, sempre respeitando o resultado calculado pela regra.
+A IA deve transformar esse sinal em uma explicacao legivel, sempre respeitando o resultado calculado pela regra. No MVP atual, perfil e objetivo influenciam o texto gerado, mas nao alteram os thresholds numericos da recomendacao.
 
 ### Fluxo fim a fim
 
 1. Frontend envia busca ou pedido de analise para a API.
 2. API valida parametros e busca dados ja persistidos quando possivel.
-3. Se necessario, a camada de integracao coleta dados externos.
-4. O backend aciona agentes de classificacao e valuation.
+3. O backend usa dados ja persistidos no banco; integracao externa fica para evolucao futura.
+4. O backend aciona classificacao e valuation.
 5. O resultado consolidado e salvo no banco.
 6. Quando houver perfil ou objetivo, o agente de recomendacao gera a saida final.
 7. A API devolve dados estruturados para o frontend com status, rastreabilidade e mensagens de erro quando houver.
@@ -512,14 +507,14 @@ A IA deve transformar esse sinal em uma explicacao legivel, sempre respeitando o
 
 | Entidade | Finalidade | Campos principais | Relacionamentos |
 | --- | --- | --- | --- |
-| `UserProfile` | Guardar contexto do usuario para recomendacao | `id`, `type`, `riskTolerance`, `objective`, `investmentHorizon` | 1:N com `Recommendation` |
+| `UserProfile` | Guardar contexto do usuario para recomendacao | `id`, `type`, `riskTolerance`, `objective`, `investmentHorizon` | 1:N com `Recommendation`; 1:N com `AnalysisRequest` |
 | `Company` | Representar empresa listada | `id`, `ticker`, `name`, `sector`, `market` | 1:N com `FinancialSnapshot`, `HistoricalSeries`, `AnalysisRequest` |
 | `FinancialSnapshot` | Guardar indicadores pontuais | `id`, `companyId`, `referenceDate`, `currentPrice`, `earningsPerShare`, `peRatio`, `revenue`, `ebitda`, `netIncome`, `debt`, `source` | N:1 com `Company` |
 | `HistoricalSeries` | Guardar series historicas e dados para graficos | `id`, `companyId`, `metric`, `period`, `value`, `source` | N:1 com `Company` |
-| `AnalysisRequest` | Registrar pedido e status da analise | `id`, `companyId`, `requestedBy`, `status`, `requestedAt` | N:1 com `Company`; 1:1 ou 1:N com `AnalysisResult` |
-| `AnalysisResult` | Consolidar resultado analitico da empresa | `id`, `analysisRequestId`, `classificationSummary`, `confidenceLevel`, `generatedAt` | N:1 com `AnalysisRequest` |
-| `ValuationResult` | Guardar resultado do valuation | `id`, `analysisResultId`, `fairPrice`, `upsidePct`, `targetPeRatio`, `method`, `rationaleSummary` | N:1 com `AnalysisResult` |
-| `Recommendation` | Registrar recomendacao ao usuario | `id`, `analysisResultId`, `userProfileId`, `recommendationType`, `summary`, `nextAction` | N:1 com `AnalysisResult`; N:1 com `UserProfile` |
+| `AnalysisRequest` | Registrar pedido e status da analise | `id`, `companyId`, `userProfileId`, `requestedBy`, `objective`, `status`, `requestedAt`, `updatedAt` | N:1 com `Company`; N:1 opcional com `UserProfile`; 1:1 com `AnalysisResult` |
+| `AnalysisResult` | Consolidar resultado analitico da empresa | `id`, `analysisRequestId`, `classificationSummary`, `confidenceLevel`, `modelVersion`, `dataSources`, `generatedAt` | 1:1 com `AnalysisRequest`; 1:1 com `ValuationResult`; 1:N com `Recommendation` |
+| `ValuationResult` | Guardar resultado do valuation | `id`, `analysisResultId`, `fairPrice`, `upsidePct`, `targetPeRatio`, `method`, `rationaleSummary`, `assumptions` | 1:1 com `AnalysisResult` |
+| `Recommendation` | Registrar recomendacao ao usuario | `id`, `analysisResultId`, `userProfileId`, `recommendationType`, `summary`, `nextAction`, `objective`, `confidenceLevel` | N:1 com `AnalysisResult`; N:1 opcional com `UserProfile` |
 
 ### Chaves e relacionamentos
 
@@ -548,7 +543,8 @@ Resposta resumida:
       "id": "cmp_123",
       "ticker": "BBAS3",
       "name": "Banco do Brasil",
-      "sector": "Financeiro"
+      "sector": "Financeiro",
+      "market": "B3"
     }
   ]
 }
@@ -566,24 +562,34 @@ Resposta resumida:
     "id": "cmp_123",
     "ticker": "BBAS3",
     "name": "Banco do Brasil",
-    "sector": "Financeiro"
+    "sector": "Financeiro",
+    "market": "B3"
   },
   "financialSnapshot": {
-    "referenceDate": "2026-03-31",
+    "referenceDate": "2026-03-31T00:00:00.000Z",
     "currentPrice": 28.5,
     "earningsPerShare": 4.06,
     "peRatio": 7.02,
-    "revenue": 0,
-    "netIncome": 0,
-    "source": "provider-x"
+    "revenue": 380000000000,
+    "ebitda": 0,
+    "netIncome": 35000000000,
+    "debt": 0,
+    "source": "seed-local"
   },
-  "historicalSeries": []
+  "historicalSeries": [
+    {
+      "metric": "currentPrice",
+      "period": "2024-12-31T00:00:00.000Z",
+      "value": 22.1,
+      "source": "seed-local"
+    }
+  ]
 }
 ```
 
 #### `POST /analysis-requests`
 
-Objetivo: criar um pedido de analise.
+Objetivo: criar e executar um pedido de analise. No MVP atual, o processamento ocorre de forma sincrona e a resposta ja retorna o status final do pedido.
 
 Requisicao resumida:
 
@@ -600,7 +606,7 @@ Resposta resumida:
 ```json
 {
   "id": "anr_001",
-  "status": "queued"
+  "status": "completed"
 }
 ```
 
@@ -614,16 +620,28 @@ Resposta resumida:
 {
   "id": "anr_001",
   "status": "completed",
+  "companyId": "cmp_123",
+  "requestedAt": "2026-05-26T00:00:00.000Z",
+  "updatedAt": "2026-05-26T00:00:00.000Z",
   "analysisResult": {
     "classificationSummary": "empresa madura e geradora de caixa",
-    "confidenceLevel": "medium"
-  },
-  "valuationResult": {
-    "fairPrice": 32.5,
-    "upsidePct": 0.14,
-    "assumptions": {
+    "confidenceLevel": "medium",
+    "modelVersion": "rule-fallback-v1",
+    "dataSources": ["seed-local"],
+    "generatedAt": "2026-05-26T00:00:00.000Z",
+    "valuationResult": {
+      "fairPrice": 32.48,
+      "upsidePct": 0.1396,
+      "targetPeRatio": 8,
       "method": "earnings_multiple",
-      "targetPeRatio": 8
+      "rationaleSummary": "Preco justo calculado por lucro por acao multiplicado pelo P/L alvo setorial de 8.",
+      "assumptions": {
+        "method": "earnings_multiple",
+        "targetPeRatio": 8,
+        "sector": "Financeiro",
+        "currentPrice": 28.5,
+        "earningsPerShare": 4.06
+      }
     }
   }
 }
@@ -647,9 +665,13 @@ Resposta resumida:
 
 ```json
 {
+  "id": "rec_001",
   "recommendationType": "monitor",
   "summary": "ativo com fundamentos consistentes e upside moderado",
-  "nextAction": "acompanhar proximo resultado trimestral"
+  "nextAction": "acompanhar proximo resultado trimestral",
+  "objective": "crescimento com risco moderado",
+  "confidenceLevel": "medium",
+  "generatedAt": "2026-05-26T00:00:00.000Z"
 }
 ```
 
@@ -678,9 +700,9 @@ Nivel de confianca:
 
 Tipo de recomendacao:
 
-- `buy`: ativo parece atrativo conforme perfil e premissas.
+- `buy`: ativo parece atrativo conforme premissas atuais.
 - `monitor`: ativo deve ser acompanhado antes de decisao.
-- `avoid`: ativo nao esta alinhado ao perfil, risco ou premissas atuais.
+- `avoid`: ativo nao apresenta margem suficiente ou possui dados criticos ausentes.
 
 ### Formato padrao de erro
 
@@ -701,8 +723,8 @@ Tipo de recomendacao:
 1. Usuario busca `BBAS3` em `GET /companies?query=BBAS3`.
 2. Sistema retorna a empresa e o usuario abre `GET /companies/:companyId`.
 3. Usuario solicita analise via `POST /analysis-requests`.
-4. Backend cria `AnalysisRequest`, coleta dados, classifica a empresa e calcula valuation.
-5. Usuario consulta `GET /analysis-requests/:analysisRequestId` ate o status ser `completed`.
+4. Backend cria `AnalysisRequest`, recupera dados persistidos, classifica a empresa e calcula valuation.
+5. Usuario consulta `GET /analysis-requests/:analysisRequestId` para ver o resultado persistido.
 6. Usuario pede recomendacao em `POST /recommendations`.
 7. Sistema devolve recomendacao com resumo, proxima acao e referencia ao contexto analisado.
 
@@ -817,15 +839,22 @@ O MVP pode ser considerado pronto para apresentacao quando:
 - Preservar resultados validos de etapas anteriores mesmo quando uma etapa posterior falhar.
 - Exibir mensagens claras para ausencia de dados, timeout, limite de requisicao e recomendacao parcial.
 
+### Decisoes ja fechadas no MVP atual
+
+- Indicadores exibidos no detalhe: `currentPrice`, `earningsPerShare`, `peRatio`, `revenue`, `ebitda`, `netIncome`, `debt`, fonte e data de referencia.
+- Tabela de multiplos por setor: definida na regra `TARGET_PE_BY_SECTOR` do modulo de valuation.
+- Limites de recomendacao: `buy` para `upsidePct >= 0.15` com confianca `medium` ou `high`; `avoid` para `upsidePct < -0.05` ou `upsidePct` ausente; demais casos ficam como `monitor`.
+- Perfil de usuario: pode existir no banco, mas o fluxo atual aceita `objective` textual diretamente e usa esse contexto na geracao da recomendacao.
+
 ### Duvidas em aberto
 
-- Qual conjunto minimo de indicadores financeiros deve ser obrigatorio na tela inicial de detalhe?
-- Qual tabela de multiplos por setor sera usada no valuation simplificado?
-- Quais limites de `upsidePct` serao usados para mapear recomendacao em `buy`, `monitor` ou `avoid`?
-- O perfil do usuario sera explicitamente cadastrado ou inferido a partir de perguntas no fluxo?
+- Qual provedor externo de dados de mercado sera usado depois do seed local?
+- Quais criterios adicionais de risco devem entrar no calculo de recomendacao alem de `upsidePct` e confianca?
+- Como o produto deve expor historico de analises por usuario quando autenticacao for adicionada?
+- Quais prompts devem ser documentados em `docs/prompt-ops/` antes da apresentacao final?
 
 ### Proximos refinamentos recomendados
 
 - Quebrar este documento em backlog, API, dados e visao arquitetural quando o repositorio de implementacao estiver mais estavel.
-- Resolver as duvidas em aberto antes de fechar contratos definitivos de API.
+- Resolver as duvidas em aberto antes de adicionar integracoes externas, autenticacao ou recomendacao sensivel a risco.
 - Acrescentar entrevistas, validacoes externas e repositorio de prompts em documentos dedicados.
