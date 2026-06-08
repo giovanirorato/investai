@@ -188,10 +188,17 @@ export function App() {
 
   const chartData = useMemo(() => {
     return (
-      selectedCompany?.historicalSeries.map((point) => ({
-        period: new Date(point.period).getUTCFullYear().toString(),
-        value: point.value
-      })) ?? []
+      selectedCompany?.historicalSeries.map((point) => {
+        const date = new Date(point.period);
+
+        return {
+          period: date.toLocaleDateString("pt-BR", {
+            month: "2-digit",
+            year: "numeric"
+          }),
+          value: point.value
+        };
+      }) ?? []
     );
   }, [selectedCompany]);
 
@@ -324,7 +331,7 @@ export function App() {
                     <YAxis tickLine={false} axisLine={false} width={56} />
                     <Tooltip
                       formatter={(value) => currencyFormatter.format(Number(value))}
-                      labelFormatter={(label) => `Ano ${label}`}
+                      labelFormatter={(label) => `Período ${label}`}
                     />
                     <Line
                       type="monotone"
