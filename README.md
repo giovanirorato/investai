@@ -76,8 +76,44 @@ Pre-requisitos:
 - Node.js 22 ou superior.
 - Docker e Docker Compose.
 - npm.
-- Chave de API do openrouter.
-- Chave de API do brapi.
+- Conta e chave de API do OpenRouter.
+- Chave de API do BrAPI.
+
+### Variaveis de ambiente
+
+Copie o arquivo de exemplo e preencha os valores necessarios:
+
+```bash
+cp .env.example .env
+```
+
+As principais variaveis sao:
+
+- `DATABASE_URL`: string de conexao do PostgreSQL.
+- `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT`: configuracao do banco local.
+- `API_PORT`: porta da API.
+- `WEB_ORIGIN`: origem permitida para o frontend.
+- `VITE_API_URL`: URL da API consumida pelo frontend.
+- `BRAPI_API_KEY`: chave usada na importacao de dados de mercado.
+- `OPENROUTER_API_KEY`: chave usada pelas integracoes de IA.
+- `OPENROUTER_MODEL`: modelo consumido via OpenRouter.
+- `OPENROUTER_TIMEOUT_MS`: tempo maximo da chamada para IA.
+
+### Como obter a chave da BrAPI
+
+1. Acesse `https://brapi.dev/` e crie ou entre na sua conta.
+2. Abra a area de API keys ou de integracao da plataforma.
+3. Gere uma nova chave de acesso.
+4. Copie o valor exibido e cole em `BRAPI_API_KEY` no arquivo `.env`.
+5. Nao commite essa chave no repositório.
+
+### Como obter a chave do OpenRouter
+
+1. Acesse `https://openrouter.ai` e crie ou entre na sua conta.
+2. Abra a area de API keys.
+3. Gere uma nova chave de acesso.
+4. Copie o valor exibido e cole em `OPENROUTER_API_KEY` no arquivo `.env`.
+5. Nao commite essa chave no repositório.
 
 Passos:
 
@@ -95,9 +131,22 @@ Após colocar a api da brapi no .env, use o comando
 npm run import:companies
 ```
 
+Se quiser validar a estrutura do banco antes de subir a interface, rode também:
+
+```bash
+npm run prisma:validate
+```
+
 Para rodar use:
 ```bash
 npm run dev
+```
+
+Se preferir iniciar apenas a API ou apenas o frontend:
+
+```bash
+npm run dev:api
+npm run dev:web
 ```
 
 URLs locais:
@@ -160,9 +209,13 @@ npm run db:down
     ├── entregas
     │   └── entrega-parcial-levelup.md
     ├── arquitetura
+    │   └── arquitetura.md
     ├── planejamento
+    │   └── planejamento.md
     ├── processo
+    │   └── processo.md
     ├── prompt-ops
+    │   └── integracoes-de-ia-e-engenharia-de-prompt.md
     └── visao-geral
         └── briefing-do-produto.md
 ```
@@ -172,6 +225,10 @@ npm run db:down
 - `SPEC.md`: especificacao consolidada do produto e do MVP academico.
 - `docs/visao-geral/briefing-do-produto.md`: contexto do desafio, proposta de valor, escopo inicial e arquitetura base.
 - `docs/entregas/entrega-parcial-levelup.md`: checklist dos requisitos da entrega parcial.
+- `docs/arquitetura/arquitetura.md`: visao geral da arquitetura, organizacao por camadas e fluxo tecnico principal.
+- `docs/planejamento/planejamento.md`: fases, prioridades e evolucao planejada do projeto.
+- `docs/processo/processo.md`: processo de desenvolvimento, convencoes e criterios de validacao.
+- `docs/prompt-ops/integracoes-de-ia-e-engenharia-de-prompt.md`: documentacao das integracoes de IA, prompts e processo de obtenção da API key do OpenRouter.
 
 ## Convencao de organizacao
 
@@ -182,7 +239,5 @@ npm run db:down
 ## Proximos documentos recomendados
 
 - `docs/planejamento/backlog.md`
-- `docs/arquitetura/visao-arquitetural.md`
 - `docs/arquitetura/modelo-de-dados.md`
 - `docs/arquitetura/api.md`
-- `docs/prompt-ops/repositorio-de-prompts.md`
