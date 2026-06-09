@@ -52,6 +52,7 @@ export const completeJsonWithOpenRouter: JsonCompleter = async (request) => {
     });
 
     if (!response.ok) {
+      console.log(response)
       return null;
     }
 
@@ -61,9 +62,11 @@ export const completeJsonWithOpenRouter: JsonCompleter = async (request) => {
     if (!content) {
       return null;
     }
-
-    return JSON.parse(content);
-  } catch {
+    
+    const cleaned = content.trim().replace(/^json\s*/i, "").replace(/\s*$/, "").trim();
+    return JSON.parse(cleaned);
+  } catch (e) {
+    console.log(e)
     return null;
   } finally {
     clearTimeout(timeout);
