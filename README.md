@@ -21,7 +21,7 @@ Pending Invite
  
  @evandrolorens
 Evandro Lorens
-Collaborator
+evandrolorens • Collaborator
 
  @Lucasgean08
 Lucas_Gean
