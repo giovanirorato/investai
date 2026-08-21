@@ -1,0 +1,14 @@
+{
+  "id": "gde-exp-001-reduzir-armadilhas-de-dividendos",
+  "createdAt": "2026-08-21T12:00:00.000Z",
+  "component": "scoring",
+  "problem": "Uma estrategia influenciada em excesso pelo dividend yield atual pode aprovar empresas cujo provento resulta de pico ciclico, evento extraordinario, payout insustentavel ou deterioracao antecipada pelo mercado.",
+  "hypothesis": "Reduzir a influencia do yield corrente e aumentar a importancia da cobertura do dividendo por lucro recorrente e caixa diminuira falsos positivos sem comprometer materialmente o crescimento real da renda.",
+  "changeApplied": "Challenger: transferir cinco pontos de indicadores diretamente associados ao yield para o bloco de seguranca do dividendo, preservando os demais componentes e regras do champion.",
+  "expectedResult": "Reducao relativa minima de 15% na taxa de falsos positivos, com perda maxima de 0,3 ponto percentual ao ano no CAGR da renda real; preferencialmente, manter ou melhorar o drawdown da renda.",
+  "validationMetric": "Taxa de falsos positivos em 24 meses, CAGR da renda liquida real, drawdown da renda, retorno total liquido real, giro e concentracao da renda.",
+  "regressionRisk": "O challenger pode favorecer empresas seguras, mas caras, reduzindo excessivamente a renda inicial ou o retorno total; tambem pode concentrar a selecao em setores defensivos.",
+  "validationWindow": "Desenvolvimento 2011-2017; validacao 2018-2021; teste intocado de 2022 ate o ultimo mes completo; no minimo cinco janelas walk-forward e doze meses de carteira-sombra antes de uso real.",
+  "decisionCriteria": "Promover somente se o objetivo primario for atendido, o challenger vencer ou empatar em pelo menos dois tercos das janelas fora da amostra, nao piorar o drawdown patrimonial em mais de 3 pontos percentuais, nao aumentar o giro em mais de 10 pontos percentuais e nao elevar concentracao ou complexidade sem beneficio mensuravel.",
+  "status": "proposed"
+}
