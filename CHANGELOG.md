@@ -2,6 +2,27 @@
 
 Este arquivo registra as implementacoes e mudancas relevantes do projeto em ordem cronologica, usando o formato `AAAA-MM-DD`.
 
+## 2026-08-21
+
+### Adicionado
+
+- Criados contratos compartilhados point-in-time para candidatos, regras, metricas de backtest e experimentos do G Dividendos Evolutivo (`GDE-1.0.0`).
+- Criado contrato auditavel para snapshots de carteira, preservando arquivo-fonte, hash, linha de origem, valores ausentes e avisos de importacao.
+- Implementado calculo deterministico de dividendo normalizado bruto e liquido pela restricao mais conservadora entre recorrencia, lucro e caixa.
+- Implementados filtros eliminatorios, quarentena de governanca, comparacao setorial, pontuacao por cobertura de dados e ranking do universo elegivel.
+- Implementada construcao de carteira com pesos aproximadamente iguais, limites por empresa, setor e fonte de renda e manutencao de saldo nao alocado em caixa.
+- Implementada governanca champion/challenger com criterios de promocao, observacao, manutencao e rollback.
+- Implementada auditoria de snapshots com reconciliacao de totais, duplicidades, valores ausentes e completude.
+- Adicionados testes unitarios para normalizacao, look-ahead, governanca, yield traps, dados ausentes, concentracao, snapshots e evolucao metodologica.
+- Documentada a metodologia em `docs/metodologia/gde-v1.md`.
+- Registrado o primeiro contrato falsificavel em `docs/metodologia/experimentos/gde-exp-001-reduzir-armadilhas-de-dividendos.json`.
+
+### Pendente de validacao
+
+- Executar `typecheck`, `build`, validacao Prisma e testes em ambiente com execucao disponivel.
+- Mapear e importar os snapshots de 4 e 19 de abril de 2026.
+- Implementar a coleta historica point-in-time da CVM/B3 e o backtest walk-forward completo.
+
 ## 2026-05-26
 
 ### Adicionado
