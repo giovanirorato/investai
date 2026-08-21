@@ -11,9 +11,10 @@ Este arquivo registra as implementacoes e mudancas relevantes do projeto em orde
 - Implementado calculo deterministico de dividendo normalizado bruto e liquido pela restricao mais conservadora entre recorrencia, lucro e caixa.
 - Implementados filtros eliminatorios, quarentena de governanca, comparacao setorial, pontuacao por cobertura de dados e ranking do universo elegivel.
 - Implementada construcao de carteira com pesos aproximadamente iguais, limites por empresa, setor e fonte de renda e manutencao de saldo nao alocado em caixa.
+- Implementado calculador de backtest para renda real de 12 meses, CAGR, drawdowns, giro anualizado, falsos positivos e concentracao por empresa e setor.
 - Implementada governanca champion/challenger com criterios de promocao, observacao, manutencao e rollback.
 - Implementada auditoria de snapshots com reconciliacao de totais, duplicidades, valores ausentes e completude.
-- Adicionados testes unitarios para normalizacao, look-ahead, governanca, yield traps, dados ausentes, concentracao, snapshots e evolucao metodologica.
+- Adicionados testes unitarios para contratos, metricas de backtest, normalizacao, look-ahead, governanca, yield traps, dados ausentes, concentracao, snapshots e evolucao metodologica.
 - Documentada a metodologia em `docs/metodologia/gde-v1.md`.
 - Registrado o primeiro contrato falsificavel em `docs/metodologia/experimentos/gde-exp-001-reduzir-armadilhas-de-dividendos.json`.
 
