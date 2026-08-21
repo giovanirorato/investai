@@ -143,28 +143,39 @@ function percentileRank(values: number[], target: number): number {
   }
 
   const sorted = [...values].sort((left, right) => left - right);
-  const firstIndex = sorted.findIndex((value) => value === target);
-  const lastIndex = sorted.findLastIndex((value) => value === target);
+  let firstIndex = -1;
+  let lastIndex = -1;
+
+  for (let index = 0; index < sorted.length; index += 1) {
+    if (sorted[index] === target) {
+      if (firstIndex === -1) {
+        firstIndex = index;
+      }
+      lastIndex = index;
+    }
+  }
 
   if (firstIndex < 0 || lastIndex < 0) {
     const lowerCount = sorted.filter((value) => value < target).length;
     return lowerCount / (sorted.length - 1);
   }
 
-  const averageRank = (firstIndex + lastIndex) / 2;
-  return averageRank / (sorted.length - 1);
+  return ((firstIndex + lastIndex) / 2) / (sorted.length - 1);
 }
 
 export function normalizeDividend(
   input: GdeCandidateInput["dividendNormalization"]
 ): GdeNormalizedDividend {
-  const constraints = [
+  const constraints: Array<{
+    key: GdeNormalizedDividend["bindingConstraint"];
+    value: number;
+  }> = [
     {
-      key: "recurring_dividend" as const,
+      key: "recurring_dividend",
       value: input.medianRecurringDpsReal
     },
     {
-      key: "earnings_payout" as const,
+      key: "earnings_payout",
       value: input.payoutCap * input.medianAdjustedEpsReal
     }
   ];
@@ -175,8 +186,7 @@ export function normalizeDividend(
   ) {
     constraints.push({
       key: "cash_payout",
-      value:
-        input.cashPayoutCap * input.medianFreeCashFlowPerShareReal
+      value: input.cashPayoutCap * input.medianFreeCashFlowPerShareReal
     });
   }
 
@@ -286,10 +296,11 @@ function filterCandidate(
     }
   }
 
-  if (candidate.model === "cyclical") {
-    if (candidate.sectorSpecificSolvencyOk !== true) {
-      rejectionReasons.push("cycle_solvency_not_confirmed");
-    }
+  if (
+    candidate.model === "cyclical" &&
+    candidate.sectorSpecificSolvencyOk !== true
+  ) {
+    rejectionReasons.push("cycle_solvency_not_confirmed");
   }
 
   if (candidate.model === "bank") {
@@ -330,44 +341,41 @@ function filterCandidate(
 }
 
 function safetyMetrics(model: GdeCompanyModel): MetricSpec[] {
-  if (model === "bank") {
-    return [
-      { key: "payoutAdjusted", direction: "lower" },
-      { key: "dividendCoverage", direction: "higher" },
-      { key: "capitalAdequacy", direction: "higher" },
-      { key: "assetQuality", direction: "higher" },
-      { key: "earningsStability", direction: "higher" }
-    ];
+  switch (model) {
+    case "bank":
+      return [
+        { key: "payoutAdjusted", direction: "lower" },
+        { key: "dividendCoverage", direction: "higher" },
+        { key: "capitalAdequacy", direction: "higher" },
+        { key: "assetQuality", direction: "higher" },
+        { key: "earningsStability", direction: "higher" }
+      ];
+    case "insurer":
+      return [
+        { key: "payoutAdjusted", direction: "lower" },
+        { key: "dividendCoverage", direction: "higher" },
+        { key: "solvencyMargin", direction: "higher" },
+        { key: "combinedRatio", direction: "lower" },
+        { key: "earningsStability", direction: "higher" }
+      ];
+    case "cyclical":
+      return [
+        { key: "payoutAdjusted", direction: "lower" },
+        { key: "dividendCoverage", direction: "higher" },
+        { key: "netDebtEbitda", direction: "lower" },
+        { key: "interestCoverage", direction: "higher" },
+        { key: "earningsStability", direction: "higher" }
+      ];
+    default:
+      return [
+        { key: "payoutAdjusted", direction: "lower" },
+        { key: "payoutCash", direction: "lower" },
+        { key: "dividendCoverage", direction: "higher" },
+        { key: "netDebtEbitda", direction: "lower" },
+        { key: "interestCoverage", direction: "higher" },
+        { key: "cashConversion", direction: "higher" }
+      ];
   }
-
-  if (model === "insurer") {
-    return [
-      { key: "payoutAdjusted", direction: "lower" },
-      { key: "dividendCoverage", direction: "higher" },
-      { key: "solvencyMargin", direction: "higher" },
-      { key: "combinedRatio", direction: "lower" },
-      { key: "earningsStability", direction: "higher" }
-    ];
-  }
-
-  if (model === "cyclical") {
-    return [
-      { key: "payoutAdjusted", direction: "lower" },
-      { key: "dividendCoverage", direction: "higher" },
-      { key: "netDebtEbitda", direction: "lower" },
-      { key: "interestCoverage", direction: "higher" },
-      { key: "earningsStability", direction: "higher" }
-    ];
-  }
-
-  return [
-    { key: "payoutAdjusted", direction: "lower" },
-    { key: "payoutCash", direction: "lower" },
-    { key: "dividendCoverage", direction: "higher" },
-    { key: "netDebtEbitda", direction: "lower" },
-    { key: "interestCoverage", direction: "higher" },
-    { key: "cashConversion", direction: "higher" }
-  ];
 }
 
 function qualityMetrics(model: GdeCompanyModel): MetricSpec[] {
@@ -397,35 +405,31 @@ function qualityMetrics(model: GdeCompanyModel): MetricSpec[] {
   ];
 }
 
-function persistenceMetrics(): MetricSpec[] {
-  return [
-    { key: "dividendPaymentPersistence", direction: "higher" },
-    { key: "dividendCuts5y", direction: "lower" },
-    { key: "dividendGrowthReal5y", direction: "higher" },
-    { key: "earningsCashGrowthReal5y", direction: "higher" }
-  ];
-}
+const persistenceMetrics: MetricSpec[] = [
+  { key: "dividendPaymentPersistence", direction: "higher" },
+  { key: "dividendCuts5y", direction: "lower" },
+  { key: "dividendGrowthReal5y", direction: "higher" },
+  { key: "earningsCashGrowthReal5y", direction: "higher" }
+];
 
 function valuationMetrics(model: GdeCompanyModel): MetricSpec[] {
-  const common: MetricSpec[] = [
+  const metrics: MetricSpec[] = [
     { key: "normalizedDividendYieldNet", direction: "higher" },
     { key: "earningsYield", direction: "higher" },
     { key: "valuationVsHistory", direction: "higher" }
   ];
 
   if (model !== "bank" && model !== "insurer") {
-    common.push({ key: "freeCashFlowYield", direction: "higher" });
+    metrics.push({ key: "freeCashFlowYield", direction: "higher" });
   }
 
-  return common;
+  return metrics;
 }
 
-function liquidityMarketMetrics(): MetricSpec[] {
-  return [
-    { key: "averageDailyLiquidity63d", direction: "higher" },
-    { key: "momentum12mEx1m", direction: "higher" }
-  ];
-}
+const liquidityMarketMetrics: MetricSpec[] = [
+  { key: "averageDailyLiquidity63d", direction: "higher" },
+  { key: "momentum12mEx1m", direction: "higher" }
+];
 
 function metricValue(
   context: CandidateContext,
@@ -441,7 +445,7 @@ function metricValue(
     return context.input.averageDailyLiquidity63d;
   }
 
-  const value = context.input.metrics[key];
+  const value = context.input.metrics[key as keyof GdeCandidateMetrics];
   return nonNull(value) ? value : null;
 }
 
@@ -453,20 +457,14 @@ function comparisonPeers(
     (peer) => peer.input.sector === context.input.sector
   );
   if (sectorPeers.length >= 3) {
-    return {
-      label: `sector:${context.input.sector}`,
-      peers: sectorPeers
-    };
+    return { label: `sector:${context.input.sector}`, peers: sectorPeers };
   }
 
   const modelPeers = eligible.filter(
     (peer) => peer.input.model === context.input.model
   );
   if (modelPeers.length >= 3) {
-    return {
-      label: `model:${context.input.model}`,
-      peers: modelPeers
-    };
+    return { label: `model:${context.input.model}`, peers: modelPeers };
   }
 
   return { label: "eligible_universe", peers: eligible };
@@ -504,11 +502,11 @@ function scoreBlock(
     return { score: 0, present: 0, total: specs.length };
   }
 
-  const averagePercentile = percentileSum / present;
-  const coveragePenalty = present / specs.length;
-
   return {
-    score: round(weight * averagePercentile * coveragePenalty, 4),
+    score: round(
+      weight * (percentileSum / present) * (present / specs.length),
+      4
+    ),
     present,
     total: specs.length
   };
@@ -562,7 +560,7 @@ export function rankGdeUniverse(
     const persistence = scoreBlock(
       context,
       comparison.peers,
-      persistenceMetrics(),
+      persistenceMetrics,
       rules.scoreWeights.persistenceGrowth
     );
     const valuation = scoreBlock(
@@ -574,7 +572,7 @@ export function rankGdeUniverse(
     const liquidityMarket = scoreBlock(
       context,
       comparison.peers,
-      liquidityMarketMetrics(),
+      liquidityMarketMetrics,
       rules.scoreWeights.liquidityMarket
     );
     const score = round(
@@ -614,7 +612,7 @@ export function rankGdeUniverse(
         liquidityMarket: liquidityMarket.score
       },
       score,
-      metricCoverage: round(present / total, 4),
+      metricCoverage: total > 0 ? round(present / total, 4) : 0,
       rank: null,
       entryEligible: score >= rules.minimumEntryScore
     };
