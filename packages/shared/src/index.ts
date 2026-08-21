@@ -20,6 +20,20 @@ export type {
 export { ApiErrorResponseSchema, ErrorCodeSchema } from "./contracts/error.js";
 export type { ApiErrorResponse, ErrorCode } from "./contracts/error.js";
 export {
+  GdeAssetClassSchema,
+  GdePortfolioSnapshotSchema,
+  GdeSnapshotAuditSchema,
+  GdeSnapshotAuditStatusSchema,
+  GdeSnapshotPositionSchema
+} from "./contracts/gde-snapshot.js";
+export type {
+  GdeAssetClass,
+  GdePortfolioSnapshot,
+  GdeSnapshotAudit,
+  GdeSnapshotAuditStatus,
+  GdeSnapshotPosition
+} from "./contracts/gde-snapshot.js";
+export {
   GdeBacktestMetricsSchema,
   GdeCandidateInputSchema,
   GdeCandidateMetricsSchema,
