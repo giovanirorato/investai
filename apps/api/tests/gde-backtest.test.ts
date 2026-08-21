@@ -16,7 +16,8 @@ function monthlyObservations(): GdeBacktestObservation[] {
       date: `${year}-${String(month).padStart(2, "0")}-28`,
       netDividendIncome: index < 12 ? 100 : 110,
       cpiIndex: 1,
-      portfolioMarketValue: index === 15 ? 800 : 1_000,
+      portfolioMarketValue: 1_000,
+      wealthIndexLevel: index === 15 ? 800 : 1_000,
       tradedNotional: 10
     });
   }
@@ -53,24 +54,28 @@ describe("GDE backtest metrics", () => {
     expect(result.metrics.realIncomeCagr).toBeCloseTo(0.1, 6);
     expect(result.metrics.incomeDrawdown).toBe(0);
     expect(result.metrics.wealthDrawdown).toBeCloseTo(0.2, 6);
-    expect(result.metrics.turnover).toBeCloseTo(0.121008, 6);
+    expect(result.metrics.turnover).toBeCloseTo(0.12, 6);
     expect(result.metrics.falsePositiveRate).toBeCloseTo(0.2, 6);
     expect(result.metrics.incomeConcentrationHhi).toBeCloseTo(0.52, 6);
     expect(result.metrics.sectorConcentrationHhi).toBeCloseTo(0.52, 6);
     expect(result.realIncomeTtmSeries).toHaveLength(13);
-    expect(result.realPortfolioValueSeries).toHaveLength(24);
+    expect(result.realWealthIndexSeries).toHaveLength(24);
     expect(result.warnings).toEqual([]);
   });
 
-  it("deflates income and portfolio values by the observed CPI index", () => {
+  it("deflates income, exposure and the flow-adjusted wealth index", () => {
     const observations = monthlyObservations().map((observation, index) => ({
       ...observation,
       cpiIndex: index < 12 ? 1 : 1.1,
-      portfolioMarketValue: index < 12 ? 1_000 : 1_100
+      portfolioMarketValue: index < 12 ? 1_000 : 1_100,
+      wealthIndexLevel: index < 12 ? 1_000 : 1_100
     }));
     const result = calculateGdeBacktestMetrics(input({ observations }));
 
-    expect(result.realPortfolioValueSeries.at(-1)?.value).toBeCloseTo(1_000, 6);
+    expect(result.realWealthIndexSeries.at(-1)?.value).toBeCloseTo(
+      1_000,
+      6
+    );
     expect(result.metrics.wealthDrawdown).toBe(0);
   });
 
