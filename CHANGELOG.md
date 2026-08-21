@@ -11,18 +11,29 @@ Este arquivo registra as implementacoes e mudancas relevantes do projeto em orde
 - Implementado calculo deterministico de dividendo normalizado bruto e liquido pela restricao mais conservadora entre recorrencia, lucro e caixa.
 - Implementados filtros eliminatorios, quarentena de governanca, comparacao setorial, pontuacao por cobertura de dados e ranking do universo elegivel.
 - Implementada construcao de carteira com pesos aproximadamente iguais, limites por empresa, setor e fonte de renda e manutencao de saldo nao alocado em caixa.
+- Implementada revisao de posicoes existentes com zona de manutencao, observacao antes da revisao de saida e revisao urgente para sinais materiais.
 - Implementado calculador de backtest para renda real de 12 meses, CAGR, drawdowns, giro anualizado, falsos positivos e concentracao por empresa e setor.
 - Implementada governanca champion/challenger com criterios de promocao, observacao, manutencao e rollback.
 - Implementada auditoria de snapshots com reconciliacao de totais, duplicidades, valores ausentes e completude.
-- Adicionados testes unitarios para contratos, metricas de backtest, normalizacao, look-ahead, governanca, yield traps, dados ausentes, concentracao, snapshots e evolucao metodologica.
+- Adicionados testes unitarios para contratos, metricas de backtest, normalizacao, look-ahead, governanca, yield traps, dados ausentes, concentracao, snapshots, manutencao de posicoes e evolucao metodologica.
+- Adicionado workflow de CI para instalacao reproduzivel, geracao Prisma, typecheck, build, validacao do schema e testes.
 - Documentada a metodologia em `docs/metodologia/gde-v1.md`.
+- Documentado o calculador em `docs/metodologia/gde-backtest.md`.
 - Registrado o primeiro contrato falsificavel em `docs/metodologia/experimentos/gde-exp-001-reduzir-armadilhas-de-dividendos.json`.
+- Registrada a primeira validacao de engenharia em `docs/metodologia/validacoes/gde-validacao-2026-08-21.md`.
 
-### Pendente de validacao
+### Validado
 
-- Executar `typecheck`, `build`, validacao Prisma e testes em ambiente com execucao disponivel.
+- GitHub Actions aprovou typecheck, build e validacao do schema Prisma.
+- A suite aprovou 10 arquivos e 45 testes, dos quais 31 cobrem diretamente o GDE.
+- A primeira execucao revelou duas expectativas antigas da busca de empresas; os testes foram alinhados ao comportamento existente sem alterar a API.
+
+### Pendente de validacao financeira
+
 - Mapear e importar os snapshots de 4 e 19 de abril de 2026.
-- Implementar a coleta historica point-in-time da CVM/B3 e o backtest walk-forward completo.
+- Reconciliar posicoes, pesos, classes e concentracoes reais.
+- Implementar a coleta historica point-in-time da CVM/B3.
+- Executar o backtest walk-forward completo, testes de robustez e carteira-sombra.
 
 ## 2026-05-26
 
