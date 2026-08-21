@@ -11,16 +11,16 @@ const contract: GdeExperimentContract = {
   component: "scoring",
   problem: "Armadilhas de dividendos elevam falsos positivos.",
   hypothesis:
-    "Aumentar a importância da cobertura por caixa reduzirá falsos positivos.",
+    "Aumentar a importancia da cobertura por caixa reduzira falsos positivos.",
   changeApplied:
-    "Transferir cinco pontos do DY para segurança do dividendo.",
+    "Transferir cinco pontos do DY para seguranca do dividendo.",
   expectedResult:
     "Reduzir falsos positivos sem comprometer o crescimento real da renda.",
   validationMetric: "CAGR da renda real e taxa de falsos positivos.",
   regressionRisk: "Selecionar empresas excessivamente caras.",
   validationWindow: "Cinco janelas walk-forward e carteira-sombra.",
   decisionCriteria:
-    "Promover somente com objetivo primário e todos os guardrails aprovados.",
+    "Promover somente com objetivo primario e todos os guardrails aprovados.",
   status: "running"
 };
 
@@ -92,6 +92,26 @@ describe("GDE champion/challenger governance", () => {
     );
     expect(evaluation.regressionSignals).toContain(
       "drawdown_patrimonial_acima_do_limite"
+    );
+  });
+
+  it("blocks promotion when false positives breach the guardrail", () => {
+    const evaluation = evaluateGdeChallenger(
+      contract,
+      champion,
+      metrics({
+        realIncomeCagr: 0.047,
+        incomeDrawdown: 0.14,
+        falsePositiveRate: 0.225,
+        windowsWon: 5,
+        windowsTotal: 6
+      })
+    );
+
+    expect(evaluation.primaryCriterionPassed).toBe(true);
+    expect(evaluation.decision).toBe("rollback");
+    expect(evaluation.regressionSignals).toContain(
+      "taxa_de_falsos_positivos_maior"
     );
   });
 
