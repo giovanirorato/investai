@@ -24,8 +24,8 @@ export const GdeSnapshotPositionSchema = z.object({
 
 export const GdePortfolioSnapshotSchema = z.object({
   id: z.string().trim().min(1),
-  observedAt: z.string().datetime(),
-  importedAt: z.string().datetime(),
+  observedAt: z.string().datetime({ offset: true }),
+  importedAt: z.string().datetime({ offset: true }),
   sourceFile: z.string().trim().min(1),
   sourceSha256: z
     .string()
