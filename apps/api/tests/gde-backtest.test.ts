@@ -94,6 +94,19 @@ describe("GDE backtest metrics", () => {
     expect(result.success).toBe(false);
   });
 
+  it("rejects gaps in a series declared as monthly", () => {
+    const observations = monthlyObservations();
+    const june = observations[5];
+    if (!june) {
+      throw new Error("Fixture mensal invalida");
+    }
+    observations[5] = { ...june, date: "2025-07-28" };
+
+    const result = GdeBacktestRunInputSchema.safeParse(input({ observations }));
+
+    expect(result.success).toBe(false);
+  });
+
   it("rejects income without a sector mapping", () => {
     const result = GdeBacktestRunInputSchema.safeParse(
       input({ sectorByTicker: { AAAA3: "Sector A" } })
