@@ -2,6 +2,12 @@ import { z } from "zod";
 
 const IsoDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const OptionalMetricSchema = z.number().finite().nullable().optional();
+const OptionalNonNegativeMetricSchema = z
+  .number()
+  .finite()
+  .nonnegative()
+  .nullable()
+  .optional();
 
 export const GdeCompanyModelSchema = z.enum([
   "non_financial",
@@ -61,24 +67,56 @@ export const GdeScoreWeightsSchema = z
     { message: "Os pesos do GDE devem somar 100" }
   );
 
-export const GdeRulesSchema = z.object({
-  version: z.string().trim().min(1),
-  minDataCompleteness: z.number().min(0).max(1),
-  minYearsAvailable: z.number().int().positive(),
-  cyclicalMinYearsAvailable: z.number().int().positive(),
-  minAverageDailyLiquidity63d: z.number().nonnegative(),
-  liquidityPercentileFloor: z.number().min(0).max(1),
-  minimumEntryScore: z.number().min(0).max(100),
-  maintenanceScore: z.number().min(0).max(100),
-  maintenanceRank: z.number().int().positive(),
-  targetHoldings: z.number().int().positive(),
-  minimumHoldings: z.number().int().positive(),
-  maxCompanyWeight: z.number().min(0).max(1),
-  maxSectorWeight: z.number().min(0).max(1),
-  maxIncomeSharePerCompany: z.number().min(0).max(1),
-  maxTopFiveIncomeShare: z.number().min(0).max(1),
-  scoreWeights: GdeScoreWeightsSchema
-});
+export const GdeRulesSchema = z
+  .object({
+    version: z.string().trim().min(1),
+    minDataCompleteness: z.number().min(0).max(1),
+    minYearsAvailable: z.number().int().positive(),
+    cyclicalMinYearsAvailable: z.number().int().positive(),
+    minAverageDailyLiquidity63d: z.number().nonnegative(),
+    liquidityPercentileFloor: z.number().min(0).max(1),
+    minimumEntryScore: z.number().min(0).max(100),
+    maintenanceScore: z.number().min(0).max(100),
+    maintenanceRank: z.number().int().positive(),
+    targetHoldings: z.number().int().positive(),
+    minimumHoldings: z.number().int().positive(),
+    maxCompanyWeight: z.number().positive().max(1),
+    maxSectorWeight: z.number().positive().max(1),
+    maxIncomeSharePerCompany: z.number().positive().max(1),
+    maxTopFiveIncomeShare: z.number().positive().max(1),
+    scoreWeights: GdeScoreWeightsSchema
+  })
+  .superRefine((rules, context) => {
+    if (rules.minimumHoldings > rules.targetHoldings) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["minimumHoldings"],
+        message: "minimumHoldings nao pode exceder targetHoldings"
+      });
+    }
+    if (rules.maintenanceScore > rules.minimumEntryScore) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["maintenanceScore"],
+        message: "maintenanceScore nao pode exceder minimumEntryScore"
+      });
+    }
+    if (rules.maintenanceRank < rules.targetHoldings) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["maintenanceRank"],
+        message: "maintenanceRank deve ser pelo menos targetHoldings"
+      });
+    }
+    if (rules.maxTopFiveIncomeShare < rules.maxIncomeSharePerCompany) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["maxTopFiveIncomeShare"],
+        message:
+          "maxTopFiveIncomeShare nao pode ser menor que o limite individual"
+      });
+    }
+  });
 
 export const GdeDividendNormalizationInputSchema = z.object({
   price: z.number().positive(),
@@ -105,7 +143,7 @@ export const GdeCandidateMetricsSchema = z.object({
   marginStability: OptionalMetricSchema,
   earningsStability: OptionalMetricSchema,
   shareDilution5y: OptionalMetricSchema,
-  dividendCuts5y: OptionalMetricSchema,
+  dividendCuts5y: OptionalNonNegativeMetricSchema,
   dividendGrowthReal5y: OptionalMetricSchema,
   earningsCashGrowthReal5y: OptionalMetricSchema,
   earningsYield: OptionalMetricSchema,
@@ -154,7 +192,7 @@ export const GdeExperimentStatusSchema = z.enum([
 
 export const GdeExperimentContractSchema = z.object({
   id: z.string().trim().min(1),
-  createdAt: z.string().datetime(),
+  createdAt: z.string().datetime({ offset: true }),
   component: GdeComponentSchema,
   problem: z.string().trim().min(1),
   hypothesis: z.string().trim().min(1),
@@ -167,18 +205,23 @@ export const GdeExperimentContractSchema = z.object({
   status: GdeExperimentStatusSchema
 });
 
-export const GdeBacktestMetricsSchema = z.object({
-  realIncomeCagr: z.number().finite(),
-  incomeDrawdown: z.number().min(0).max(1),
-  wealthDrawdown: z.number().min(0).max(1),
-  turnover: z.number().min(0),
-  falsePositiveRate: z.number().min(0).max(1),
-  incomeConcentrationHhi: z.number().min(0).max(1),
-  sectorConcentrationHhi: z.number().min(0).max(1),
-  windowsWon: z.number().int().nonnegative(),
-  windowsTotal: z.number().int().positive(),
-  complexityScore: z.number().nonnegative()
-});
+export const GdeBacktestMetricsSchema = z
+  .object({
+    realIncomeCagr: z.number().finite(),
+    incomeDrawdown: z.number().min(0).max(1),
+    wealthDrawdown: z.number().min(0).max(1),
+    turnover: z.number().min(0),
+    falsePositiveRate: z.number().min(0).max(1),
+    incomeConcentrationHhi: z.number().min(0).max(1),
+    sectorConcentrationHhi: z.number().min(0).max(1),
+    windowsWon: z.number().int().nonnegative(),
+    windowsTotal: z.number().int().positive(),
+    complexityScore: z.number().nonnegative()
+  })
+  .refine((metrics) => metrics.windowsWon <= metrics.windowsTotal, {
+    path: ["windowsWon"],
+    message: "windowsWon nao pode exceder windowsTotal"
+  });
 
 export type GdeCompanyModel = z.infer<typeof GdeCompanyModelSchema>;
 export type GdeFilterStatus = z.infer<typeof GdeFilterStatusSchema>;
