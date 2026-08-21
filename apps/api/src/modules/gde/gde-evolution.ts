@@ -103,7 +103,10 @@ export function evaluateGdeChallenger(
     challenger.sectorConcentrationHhi - champion.sectorConcentrationHhi;
   const complexityDelta =
     challenger.complexityScore - champion.complexityScore;
-  const windowWinRate = challenger.windowsWon / challenger.windowsTotal;
+  const windowWinRate =
+    challenger.windowsTotal > 0
+      ? challenger.windowsWon / challenger.windowsTotal
+      : 0;
 
   const incomeGrowthPass =
     realIncomeCagrDelta >= policy.minimumRealIncomeCagrGain;
@@ -142,35 +145,35 @@ export function evaluateGdeChallenger(
       champion.wealthDrawdown,
       challenger.wealthDrawdown,
       policy.maximumWealthDrawdownRegression,
-      "O drawdown patrimonial não pode piorar além da tolerância definida."
+      "O drawdown patrimonial nao pode piorar alem da tolerancia definida."
     ),
     checkMaximum(
       "turnover_guardrail",
       champion.turnover,
       challenger.turnover,
       policy.maximumTurnoverIncrease,
-      "Giro adicional exige benefício líquido comprovado."
+      "Giro adicional exige beneficio liquido comprovado."
     ),
     checkMaximum(
       "false_positive_guardrail",
       champion.falsePositiveRate,
       challenger.falsePositiveRate,
       policy.maximumFalsePositiveRateRegression,
-      "A mudança não pode elevar materialmente armadilhas de dividendos."
+      "A mudanca nao pode elevar materialmente armadilhas de dividendos."
     ),
     checkMaximum(
       "income_concentration_guardrail",
       champion.incomeConcentrationHhi,
       challenger.incomeConcentrationHhi,
       policy.maximumIncomeConcentrationRegression,
-      "A renda projetada não pode ficar materialmente mais dependente de poucos pagadores."
+      "A renda projetada nao pode ficar materialmente mais dependente de poucos pagadores."
     ),
     checkMaximum(
       "sector_concentration_guardrail",
       champion.sectorConcentrationHhi,
       challenger.sectorConcentrationHhi,
       policy.maximumSectorConcentrationRegression,
-      "A mudança não pode aumentar materialmente a concentração setorial."
+      "A mudanca nao pode aumentar materialmente a concentracao setorial."
     ),
     {
       name: "complexity_guardrail",
@@ -183,7 +186,7 @@ export function evaluateGdeChallenger(
         champion.complexityScore +
         policy.maximumComplexityIncreaseWithoutBenefit,
       rationale:
-        "Complexidade adicional só é aceita quando melhora renda, risco ou previsibilidade de modo mensurável."
+        "Complexidade adicional so e aceita quando melhora renda, risco ou previsibilidade de modo mensuravel."
     }
   ];
 
@@ -194,9 +197,7 @@ export function evaluateGdeChallenger(
   ) {
     regressionSignals.push("renda_real_menor_e_drawdown_de_renda_maior");
   }
-  if (
-    wealthDrawdownDelta > policy.maximumWealthDrawdownRegression
-  ) {
+  if (wealthDrawdownDelta > policy.maximumWealthDrawdownRegression) {
     regressionSignals.push("drawdown_patrimonial_acima_do_limite");
   }
   if (
@@ -204,6 +205,12 @@ export function evaluateGdeChallenger(
     !measurableBenefit
   ) {
     regressionSignals.push("giro_maior_sem_beneficio_mensuravel");
+  }
+  if (
+    falsePositiveRateDelta >
+    policy.maximumFalsePositiveRateRegression
+  ) {
+    regressionSignals.push("taxa_de_falsos_positivos_maior");
   }
   if (
     incomeConcentrationDelta >
@@ -224,10 +231,10 @@ export function evaluateGdeChallenger(
     regressionSignals.push("complexidade_maior_sem_beneficio_mensuravel");
   }
 
-  const allGuardrailsPassed = checks.every((check) => check.passed);
+  const allChecksPassed = checks.every((check) => check.passed);
   let decision: GdeEvolutionDecision;
 
-  if (primaryCriterionPassed && allGuardrailsPassed) {
+  if (primaryCriterionPassed && allChecksPassed) {
     decision = "promote";
   } else if (regressionSignals.length > 0) {
     decision = "rollback";
@@ -242,13 +249,13 @@ export function evaluateGdeChallenger(
 
   const summaryByDecision: Record<GdeEvolutionDecision, string> = {
     promote:
-      "Promover o challenger: o objetivo primário e todos os guardrails foram atendidos.",
+      "Promover o challenger: o objetivo primario e todos os guardrails foram atendidos.",
     observe:
-      "Manter o challenger somente em carteira-sombra: há sinal parcial, mas a evidência ainda não autoriza promoção.",
+      "Manter o challenger somente em carteira-sombra: ha sinal parcial, mas a evidencia ainda nao autoriza promocao.",
     rollback:
-      "Reverter a alteração: foi detectada regressão incompatível com o contrato da estratégia.",
+      "Reverter a alteracao: foi detectada regressao incompativel com o contrato da estrategia.",
     maintain:
-      "Manter o champion atual: o challenger não apresentou melhoria material nem regressão relevante."
+      "Manter o champion atual: o challenger nao apresentou melhoria material nem regressao relevante."
   };
 
   return {
