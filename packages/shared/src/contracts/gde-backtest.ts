@@ -7,6 +7,7 @@ export const GdeBacktestObservationSchema = z.object({
   netDividendIncome: z.number().nonnegative(),
   cpiIndex: z.number().positive(),
   portfolioMarketValue: z.number().nonnegative(),
+  wealthIndexLevel: z.number().positive(),
   tradedNotional: z.number().nonnegative()
 });
 
