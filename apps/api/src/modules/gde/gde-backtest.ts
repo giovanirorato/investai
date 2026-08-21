@@ -12,7 +12,7 @@ export type GdeBacktestSeriesPoint = {
 export type GdeBacktestCalculation = {
   metrics: GdeBacktestMetrics;
   realIncomeTtmSeries: GdeBacktestSeriesPoint[];
-  realPortfolioValueSeries: GdeBacktestSeriesPoint[];
+  realWealthIndexSeries: GdeBacktestSeriesPoint[];
   warnings: string[];
 };
 
@@ -106,12 +106,12 @@ function buildRealIncomeTtmSeries(
   return series;
 }
 
-function buildRealPortfolioSeries(
+function buildRealWealthIndexSeries(
   observations: GdeBacktestObservation[]
 ): GdeBacktestSeriesPoint[] {
   return observations.map((observation) => ({
     date: observation.date,
-    value: round(observation.portfolioMarketValue / observation.cpiIndex)
+    value: round(observation.wealthIndexLevel / observation.cpiIndex)
   }));
 }
 
@@ -137,12 +137,14 @@ function calculateRealIncomeCagr(
 
 function calculateAnnualizedTurnover(
   observations: GdeBacktestObservation[],
-  realPortfolioSeries: GdeBacktestSeriesPoint[],
   warnings: string[]
 ): number {
   const averageRealPortfolioValue =
-    realPortfolioSeries.reduce((sum, point) => sum + point.value, 0) /
-    realPortfolioSeries.length;
+    observations.reduce(
+      (sum, observation) =>
+        sum + observation.portfolioMarketValue / observation.cpiIndex,
+      0
+    ) / observations.length;
   if (averageRealPortfolioValue <= 0) {
     warnings.push("turnover_unavailable_without_portfolio_value");
     return 0;
@@ -166,7 +168,7 @@ export function calculateGdeBacktestMetrics(
     left.date.localeCompare(right.date)
   );
   const realIncomeTtmSeries = buildRealIncomeTtmSeries(observations);
-  const realPortfolioValueSeries = buildRealPortfolioSeries(observations);
+  const realWealthIndexSeries = buildRealWealthIndexSeries(observations);
   const realIncomeCagr = calculateRealIncomeCagr(
     realIncomeTtmSeries,
     warnings
@@ -175,13 +177,9 @@ export function calculateGdeBacktestMetrics(
     realIncomeTtmSeries.map((point) => point.value)
   );
   const wealthDrawdown = maximumDrawdown(
-    realPortfolioValueSeries.map((point) => point.value)
+    realWealthIndexSeries.map((point) => point.value)
   );
-  const turnover = calculateAnnualizedTurnover(
-    observations,
-    realPortfolioValueSeries,
-    warnings
-  );
+  const turnover = calculateAnnualizedTurnover(observations, warnings);
   const falsePositiveRate =
     input.evaluatedSelectionCount > 0
       ? input.falsePositiveCount / input.evaluatedSelectionCount
@@ -217,7 +215,7 @@ export function calculateGdeBacktestMetrics(
       complexityScore: input.complexityScore
     },
     realIncomeTtmSeries,
-    realPortfolioValueSeries,
+    realWealthIndexSeries,
     warnings
   };
 }
