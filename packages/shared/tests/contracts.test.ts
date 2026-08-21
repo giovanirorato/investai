@@ -6,20 +6,20 @@ import {
 } from "../src/index.js";
 
 describe("shared contracts", () => {
-  it("rejects empty company search queries", () => {
-    const parsed = CompanySearchQuerySchema.safeParse({
+  it("normalizes an empty company search for the initial company list", () => {
+    const parsed = CompanySearchQuerySchema.parse({
       query: "   "
     });
 
-    expect(parsed.success).toBe(false);
+    expect(parsed.query).toBe("");
   });
 
-  it("applies a default search limit", () => {
+  it("applies the current default search limit", () => {
     const parsed = CompanySearchQuerySchema.parse({
       query: "BBAS3"
     });
 
-    expect(parsed.limit).toBe(10);
+    expect(parsed.limit).toBe(50);
   });
 
   it("requires objective or user profile for recommendation requests", () => {

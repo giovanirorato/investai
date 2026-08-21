@@ -20,6 +20,56 @@ export type {
 export { ApiErrorResponseSchema, ErrorCodeSchema } from "./contracts/error.js";
 export type { ApiErrorResponse, ErrorCode } from "./contracts/error.js";
 export {
+  GdeBacktestObservationSchema,
+  GdeBacktestRunInputSchema
+} from "./contracts/gde-backtest.js";
+export type {
+  GdeBacktestObservation,
+  GdeBacktestRunInput
+} from "./contracts/gde-backtest.js";
+export {
+  GdeAssetClassSchema,
+  GdePortfolioSnapshotSchema,
+  GdeSnapshotAuditSchema,
+  GdeSnapshotAuditStatusSchema,
+  GdeSnapshotPositionSchema
+} from "./contracts/gde-snapshot.js";
+export type {
+  GdeAssetClass,
+  GdePortfolioSnapshot,
+  GdeSnapshotAudit,
+  GdeSnapshotAuditStatus,
+  GdeSnapshotPosition
+} from "./contracts/gde-snapshot.js";
+export {
+  GdeBacktestMetricsSchema,
+  GdeCandidateInputSchema,
+  GdeCandidateMetricsSchema,
+  GdeCompanyModelSchema,
+  GdeComponentSchema,
+  GdeDividendNormalizationInputSchema,
+  GdeEvolutionDecisionSchema,
+  GdeExperimentContractSchema,
+  GdeExperimentStatusSchema,
+  GdeFilterStatusSchema,
+  GdeRulesSchema,
+  GdeScoreWeightsSchema
+} from "./contracts/gde.js";
+export type {
+  GdeBacktestMetrics,
+  GdeCandidateInput,
+  GdeCandidateMetrics,
+  GdeCompanyModel,
+  GdeComponent,
+  GdeDividendNormalizationInput,
+  GdeEvolutionDecision,
+  GdeExperimentContract,
+  GdeExperimentStatus,
+  GdeFilterStatus,
+  GdeRules,
+  GdeScoreWeights
+} from "./contracts/gde.js";
+export {
   CreateRecommendationRequestSchema,
   RecommendationResponseSchema,
   RecommendationTypeSchema,

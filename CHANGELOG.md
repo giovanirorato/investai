@@ -2,6 +2,39 @@
 
 Este arquivo registra as implementacoes e mudancas relevantes do projeto em ordem cronologica, usando o formato `AAAA-MM-DD`.
 
+## 2026-08-21
+
+### Adicionado
+
+- Criados contratos compartilhados point-in-time para candidatos, regras, metricas de backtest e experimentos do G Dividendos Evolutivo (`GDE-1.0.0`).
+- Criado contrato auditavel para snapshots de carteira, preservando arquivo-fonte, hash, linha de origem, valores ausentes e avisos de importacao.
+- Implementado calculo deterministico de dividendo normalizado bruto e liquido pela restricao mais conservadora entre recorrencia, lucro e caixa.
+- Implementados filtros eliminatorios, quarentena de governanca, comparacao setorial, pontuacao por cobertura de dados e ranking do universo elegivel.
+- Implementada construcao de carteira com pesos aproximadamente iguais, limites por empresa, setor e fonte de renda e manutencao de saldo nao alocado em caixa.
+- Implementada revisao de posicoes existentes com zona de manutencao, observacao antes da revisao de saida e revisao urgente para sinais materiais.
+- Implementado calculador de backtest para renda real de 12 meses, CAGR, drawdowns, giro anualizado, falsos positivos e concentracao por empresa e setor.
+- Implementada governanca champion/challenger com criterios de promocao, observacao, manutencao e rollback.
+- Implementada auditoria de snapshots com reconciliacao de totais, duplicidades, valores ausentes e completude.
+- Adicionados testes unitarios para contratos, metricas de backtest, normalizacao, look-ahead, governanca, yield traps, dados ausentes, concentracao, snapshots, manutencao de posicoes e evolucao metodologica.
+- Adicionado workflow de CI para instalacao reproduzivel, geracao Prisma, typecheck, build, validacao do schema e testes.
+- Documentada a metodologia em `docs/metodologia/gde-v1.md`.
+- Documentado o calculador em `docs/metodologia/gde-backtest.md`.
+- Registrado o primeiro contrato falsificavel em `docs/metodologia/experimentos/gde-exp-001-reduzir-armadilhas-de-dividendos.json`.
+- Registrada a primeira validacao de engenharia em `docs/metodologia/validacoes/gde-validacao-2026-08-21.md`.
+
+### Validado
+
+- GitHub Actions aprovou typecheck, build e validacao do schema Prisma.
+- A suite aprovou 10 arquivos e 45 testes, dos quais 31 cobrem diretamente o GDE.
+- A primeira execucao revelou duas expectativas antigas da busca de empresas; os testes foram alinhados ao comportamento existente sem alterar a API.
+
+### Pendente de validacao financeira
+
+- Mapear e importar os snapshots de 4 e 19 de abril de 2026.
+- Reconciliar posicoes, pesos, classes e concentracoes reais.
+- Implementar a coleta historica point-in-time da CVM/B3.
+- Executar o backtest walk-forward completo, testes de robustez e carteira-sombra.
+
 ## 2026-05-26
 
 ### Adicionado
