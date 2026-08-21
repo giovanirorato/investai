@@ -60,7 +60,7 @@ export function auditGdePortfolioSnapshot(
   const averagePriceCount = snapshot.positions.filter(
     (position) => position.averagePrice !== null
   ).length;
-  const totalMarketValue = resolvedValues.reduce(
+  const totalMarketValue = resolvedValues.reduce<number>(
     (total, value) => total + (value ?? 0),
     0
   );
