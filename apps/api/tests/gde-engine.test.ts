@@ -306,20 +306,17 @@ describe("GDE ranking", () => {
 });
 
 describe("GDE portfolio construction", () => {
-  it("respects the sector cap and leaves capital in cash when quality is insufficient", () => {
+  it("respects the sector cap and leaves no idle cash when four eligible names fit", () => {
     const rules: GdeRules = {
       ...DEFAULT_GDE_RULES,
       targetHoldings: 4,
       minimumHoldings: 3,
-      maximumEntryScore: undefined as never,
       minimumEntryScore: 0,
       maxCompanyWeight: 0.25,
       maxSectorWeight: 0.5,
       maxIncomeSharePerCompany: 1,
       maxTopFiveIncomeShare: 1
     };
-    delete (rules as Partial<GdeRules> & { maximumEntryScore?: number })
-      .maximumEntryScore;
 
     const portfolio = buildGdePortfolio(
       [
