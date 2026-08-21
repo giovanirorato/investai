@@ -20,6 +20,34 @@ export type {
 export { ApiErrorResponseSchema, ErrorCodeSchema } from "./contracts/error.js";
 export type { ApiErrorResponse, ErrorCode } from "./contracts/error.js";
 export {
+  GdeBacktestMetricsSchema,
+  GdeCandidateInputSchema,
+  GdeCandidateMetricsSchema,
+  GdeCompanyModelSchema,
+  GdeComponentSchema,
+  GdeDividendNormalizationInputSchema,
+  GdeEvolutionDecisionSchema,
+  GdeExperimentContractSchema,
+  GdeExperimentStatusSchema,
+  GdeFilterStatusSchema,
+  GdeRulesSchema,
+  GdeScoreWeightsSchema
+} from "./contracts/gde.js";
+export type {
+  GdeBacktestMetrics,
+  GdeCandidateInput,
+  GdeCandidateMetrics,
+  GdeCompanyModel,
+  GdeComponent,
+  GdeDividendNormalizationInput,
+  GdeEvolutionDecision,
+  GdeExperimentContract,
+  GdeExperimentStatus,
+  GdeFilterStatus,
+  GdeRules,
+  GdeScoreWeights
+} from "./contracts/gde.js";
+export {
   CreateRecommendationRequestSchema,
   RecommendationResponseSchema,
   RecommendationTypeSchema,
