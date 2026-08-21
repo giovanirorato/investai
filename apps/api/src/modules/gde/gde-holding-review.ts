@@ -75,14 +75,6 @@ export function reviewGdeHolding(
     maintenanceRank: rules.maintenanceRank
   };
 
-  if (urgentReasons.length > 0) {
-    return {
-      ...base,
-      action: "urgent_review",
-      reasons: urgentReasons
-    };
-  }
-
   if (dataIntegrityReasons.length > 0) {
     return {
       ...base,
@@ -92,6 +84,14 @@ export function reviewGdeHolding(
   }
 
   if (!input.currentlyHeld) {
+    if (urgentReasons.length > 0) {
+      return {
+        ...base,
+        action: "do_not_enter",
+        reasons: urgentReasons
+      };
+    }
+
     const insideEntryRank =
       input.candidate.rank !== null &&
       input.candidate.rank <= rules.targetHoldings;
@@ -114,6 +114,14 @@ export function reviewGdeHolding(
         allFilterReasons.length > 0
           ? allFilterReasons
           : ["entry_score_or_rank_not_approved"]
+    };
+  }
+
+  if (urgentReasons.length > 0) {
+    return {
+      ...base,
+      action: "urgent_review",
+      reasons: urgentReasons
     };
   }
 
